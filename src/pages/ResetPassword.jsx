@@ -50,7 +50,7 @@ const ResetPassword = () => {
         />
         {error && <p className="text-red-500 text-sm">{error}</p>}
         {success && (
-          <p className="text-green-500 text-sm">
+          <p className="text-green-500 text-sm p-2">
             Password updated! Redirecting...
           </p>
         )}
