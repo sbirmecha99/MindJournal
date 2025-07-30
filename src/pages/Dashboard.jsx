@@ -35,10 +35,10 @@ const Dashboard = () => {
   return (
     <div className="space-y-6 animate-fadeIn">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white">
+        <h1 className="text-2xl md:text-3xl font-libre-baskerville font-bold text-neutral-900 dark:text-white">
           Welcome, {user.name}
         </h1>
-        <p className="text-neutral-600 dark:text-neutral-400 mt-1">
+        <p className="font-lora text-[18px] text-neutral-600 dark:text-neutral-400 mt-1">
           {currentDate}
         </p>
       </div>
@@ -47,19 +47,31 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="card p-6 bg-gradient-to-br from-primary-500 to-primary-600 text-white">
-          <h2 className="text-xl font-semibold mb-2">Your Journal Status</h2>
+          <h2 className="font-lora text-xl font-semibold mb-2">
+            Your Journal Status
+          </h2>
           <div className="flex flex-col space-y-1">
             <div className="flex justify-between">
-              <span>Total entries:</span>
-              <span className="font-semibold">{entries.length}</span>
+              <span className="font-lora font-light text-[18px]">
+                Total entries:
+              </span>
+              <span className="font-lora font-semibold text-xl">
+                {entries.length}
+              </span>
             </div>
             <div className="flex justify-between">
-              <span>Last 30 days:</span>
-              <span className="font-semibold">{recentEntriesCount}</span>
+              <span className="font-lora font-light text-[18px]">
+                Last 30 days:
+              </span>
+              <span className="font-lora font-semibold text-xl">
+                {recentEntriesCount}
+              </span>
             </div>
             <div className="flex justify-between">
-              <span>Entry today:</span>
-              <span className="font-semibold">
+              <span className="font-lora font-light text-[18px]">
+                Entry today:
+              </span>
+              <span className="font-lora font-semibold text-xl">
                 {hasEntryToday ? "Yes" : "No"}
               </span>
             </div>
