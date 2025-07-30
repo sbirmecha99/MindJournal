@@ -240,7 +240,7 @@ const Journal = () => {
                           />
                           <div className="flex items-center gap-1">
                             <MoodIcon mood={mood} size={16} />
-                            <span className="font-playwrite-au text-[12px]">
+                            <span className="font-lora text-[14px]">
                               {mood}
                             </span>
                           </div>
@@ -287,7 +287,7 @@ const Journal = () => {
             </>
           ) : (
             <>
-              <h3 className="text-lg font-playwrite font-medium font-medium text-neutral-800 dark:text-white mb-2">
+              <h3 className="text-lg font-libre-baskerville font-medium text-neutral-800 dark:text-white mb-2">
                 Your journal is empty!
               </h3>
               <p className="font-libre-baskerville text-sm text-neutral-600 dark:text-neutral-400 mb-4">

@@ -14,7 +14,7 @@ const CreateEntry = () => {
   return (
     <div className="max-w-2xl mx-auto animate-fadeIn">
       <h1
-        className="text-[22px] font-playwrite-au
+        className="text-[23px] font-libre-baskerville
       font-medium text-neutral-900 dark:text-white mb-6"
       >
         New Journal Entry

@@ -108,7 +108,7 @@ const Calendar = () => {
               <FiChevronLeft size={20} />
             </button>
             <button
-              className="px-4 py-2 font-playwrite font-light"
+              className="px-4 py-2 font-libre-baskerville font-light"
               onClick={() => setCurrentMonth(new Date())}
             >
               {format(currentMonth, "MMMM yyyy")}
@@ -128,7 +128,7 @@ const Calendar = () => {
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
               <div
                 key={day}
-                className="py-2 font-playwrite-au font-medium text-neutral-600 dark:text-neutral-400"
+                className="py-2 font-libre-baskerville font-medium text-neutral-600 dark:text-neutral-400"
               >
                 {day}
               </div>

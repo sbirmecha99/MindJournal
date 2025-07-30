@@ -32,7 +32,7 @@ const EntryPDF = ({ entry }) => {
       marginBottom: "30px",
     },
     journalTitle: {
-      fontFamily: "Playwrite PL, sans-serif",
+      fontFamily: "Libre Baskerville, sans-serif",
       fontSize: "24px",
       fontWeight: "bold",
       color: "#2C5282", // A deep blue
@@ -56,14 +56,14 @@ const EntryPDF = ({ entry }) => {
       fontSize: "48px",
     },
     moodText: {
-      fontFamily: "Playwrite AU QLD, sans-serif",
+      fontFamily: "Lora, sans-serif",
       fontSize: "16px",
       fontWeight: "600",
       textTransform: "capitalize",
       color: "#4A5568",
     },
     entryTitle: {
-      fontFamily: "Playwrite AU QLD, serif",
+      fontFamily: "Libre Baskerville, serif",
       fontSize: "20px",
       fontWeight: "bold",
       marginBottom: "25px",
@@ -98,7 +98,7 @@ const EntryPDF = ({ entry }) => {
       height: "auto",
     },
     footer: {
-      fontFamily: "Playwrite AU QLD, sans-serif",
+      fontFamily: "Libre Baskerville, sans-serif",
       textAlign: "center",
       borderTop: "1px solid #EAEAEA",
       paddingTop: "20px",

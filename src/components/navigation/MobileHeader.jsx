@@ -17,7 +17,7 @@ const MobileHeader = () => {
             <div className="w-8 h-8 rounded bg-primary-600 flex items-center justify-center">
               <span className="text-white font-playwrite font-bold">M</span>
             </div>
-            <h1 className="text-xl font-playwrite font-bold text-neutral-800 dark:text-white">
+            <h1 className="text-xl font-libre-baskerville font-bold text-neutral-800 dark:text-white">
               MindJournal
             </h1>
           </Link>

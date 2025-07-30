@@ -34,7 +34,7 @@ const SidePanel = ({ isOpen, day, onClose }) => {
             transition={{ type: "tween", duration: 0.3 }}
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-playwrite-au font-medium">
+              <h2 className="text-xl font-libre-baskerville font-medium">
                 Journals
               </h2>
               <button

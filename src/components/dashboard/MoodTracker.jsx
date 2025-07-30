@@ -149,7 +149,7 @@ const MoodTracker = () => {
     <div className="card">
       <div className="px-4 pt-4 pb-2">
         <h2 className="font-lora text-xl font-semibold">Mood Tracker</h2>
-        <p className="font-playwrite-au font-medium text-sm text-neutral-500 dark:text-neutral-400">
+        <p className="font-lora font-medium text-md text-neutral-500 dark:text-neutral-400">
           Last 7 days
         </p>
       </div>
@@ -188,7 +188,7 @@ const MoodTracker = () => {
                 }
               }}
             >
-              <div className="font-playwrite font-medium text-sm text-neutral-600 dark:text-neutral-400">
+              <div className="font-libre-baskerville font-medium text-sm text-neutral-600 dark:text-neutral-400">
                 {dayInfo.day}
               </div>
 

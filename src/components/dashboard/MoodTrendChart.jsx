@@ -290,7 +290,7 @@ const MoodTrendChart = () => {
           </svg>
         </button>
 
-        <span className="text-neutral-700 dark:text-neutral-300 font-playwrite-au font-medium whitespace-nowrap">
+        <span className="text-neutral-700 dark:text-neutral-300 font-libre-baskerville font-medium whitespace-nowrap">
           {currentView === "day"
             ? format(currentDateRange, "MMM d, yyyy")
             : currentView === "month"

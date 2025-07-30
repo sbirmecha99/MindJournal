@@ -113,7 +113,7 @@ const EntryDetail = () => {
           >
             <FiArrowLeft size={18} />
           </button>
-          <h1 className="text-2xl font-playwrite-au font-medium text-neutral-900 dark:text-white truncate">
+          <h1 className="text-2xl font-libre-baskerville font-medium text-neutral-900 dark:text-white truncate">
             {entry.title}
           </h1>
         </div>
@@ -147,7 +147,7 @@ const EntryDetail = () => {
         <div className="p-6">
           <div className="flex justify-between items-start mb-6">
             <div>
-              <div className="font-playwrite-au text-[14px] text-neutral-600 dark:text-neutral-400">
+              <div className="font-libre-baskerville text-[16px] text-neutral-600 dark:text-neutral-400">
                 {formattedDate} at {formattedTime}
               </div>
 
@@ -164,7 +164,7 @@ const EntryDetail = () => {
               )}`}
             >
               <MoodIcon mood={entry.mood} />
-              <span className="font-playwrite-au font-medium text-[14px]  capitalize">
+              <span className="font-lora font-medium text-[16px]  capitalize">
                 {entry.mood}
               </span>
             </div>
@@ -179,7 +179,7 @@ const EntryDetail = () => {
                 {entry.activities.map((activity) => (
                   <span
                     key={activity}
-                    className="bg-secondary-100 dark:bg-secondary-900/30 text-secondary-800 dark:text-secondary-200 px-3 py-1 text-sm font-playwrite rounded-full"
+                    className="bg-secondary-100 dark:bg-secondary-900/30 text-secondary-800 dark:text-secondary-200 px-3 py-1 text-sm font-libre-baskerville rounded-full"
                   >
                     {activity}
                   </span>
@@ -213,8 +213,8 @@ const EntryDetail = () => {
                     <span
                       className={`text-md ${
                         goal.is_completed
-                          ? "line-through text-sm font-playwrite text-gray-400"
-                          : "text-sm font-playwrite text-neutral-700 dark:text-neutral-300"
+                          ? "line-through text-sm font-libre-baskerville text-gray-400"
+                          : "text-sm font-libre-baskerville text-neutral-700 dark:text-neutral-300"
                       }`}
                     >
                       {goal.text}
@@ -227,7 +227,7 @@ const EntryDetail = () => {
 
           {entry.quote && (
             <div className="my-6 p-4 bg-primary-50 dark:bg-primary-900/20 border-l-4 border-primary-500 rounded-r-lg">
-              <p className="italicfont-lora text-[16px] text-primary-800 dark:text-primary-200">
+              <p className="italic font-lora text-[16px] text-primary-800 dark:text-primary-200">
                 "{entry.quote}"
               </p>
             </div>

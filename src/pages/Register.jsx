@@ -48,7 +48,7 @@ const Register = () => {
   return (
     <div className="card p-6 w-full animate-fadeIn">
       <div className="text-center mb-6">
-        <h1 className="text-2xl font-playwrite font-bold text-neutral-900 dark:text-white mb-2">
+        <h1 className="text-2xl font-libre-baskerville font-bold text-neutral-900 dark:text-white mb-2">
           Create Account
         </h1>
         <p className="font-libre-baskerville text-neutral-600 dark:text-neutral-400">
@@ -209,9 +209,9 @@ const Register = () => {
         Already have an account?{" "}
         <Link
           to="/login"
-          className="font-playwrite-au font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500"
+          className="font-lora font-medium text-[14px] text-primary-600 dark:text-primary-400 hover:text-primary-500"
         >
-          Sign in
+          Sign in!
         </Link>
       </div>
     </div>

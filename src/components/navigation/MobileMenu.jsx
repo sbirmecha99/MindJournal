@@ -36,7 +36,7 @@ const MobileMenu = ({ onClose }) => {
       <div className="absolute top-16 left-0 right-0 bottom-0 bg-white dark:bg-neutral-800 flex flex-col animate-slideIn">
         {/* User info */}
         <div className="p-4 mb-2 border-b border-neutral-200 dark:border-neutral-700">
-          <div className="font-playwrite-au font-medium text-neutral-900 dark:text-white">
+          <div className="font-lora font-medium text-neutral-900 dark:text-white">
             {user?.name}
           </div>
           <div className="font-lora text-sm text-neutral-500 dark:text-neutral-400">
@@ -70,7 +70,7 @@ const MobileMenu = ({ onClose }) => {
         <div className="p-4 border-t border-neutral-200 dark:border-neutral-700">
           <button
             onClick={handleLogout}
-            className="font-playwrite-au font-light w-full flex items-center space-x-3 px-3 py-3 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-neutral-700 transition-colors"
+            className="font-libre-baskerville font-light w-full flex items-center space-x-3 px-3 py-3 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-neutral-700 transition-colors"
           >
             <FiLogOut size={20} />
             <span>Log out</span>

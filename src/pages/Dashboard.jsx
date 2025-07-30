@@ -38,7 +38,7 @@ const Dashboard = () => {
         <h1 className="text-2xl md:text-3xl font-libre-baskerville font-bold text-neutral-900 dark:text-white">
           Welcome, {user.name}
         </h1>
-        <p className="font-playwrite text-neutral-600 dark:text-neutral-400 mt-1">
+        <p className="font-lora text-[18px] text-neutral-600 dark:text-neutral-400 mt-1">
           {currentDate}
         </p>
       </div>
@@ -52,7 +52,7 @@ const Dashboard = () => {
           </h2>
           <div className="flex flex-col space-y-1">
             <div className="flex justify-between">
-              <span className="font-playwrite-au font-light">
+              <span className="font-lora font-light text-[18px]">
                 Total entries:
               </span>
               <span className="font-lora font-semibold text-xl">
@@ -60,7 +60,7 @@ const Dashboard = () => {
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="font-playwrite-au font-light">
+              <span className="font-lora font-light text-[18px]">
                 Last 30 days:
               </span>
               <span className="font-lora font-semibold text-xl">
@@ -68,7 +68,9 @@ const Dashboard = () => {
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="font-playwrite-au font-light">Entry today:</span>
+              <span className="font-lora font-light text-[18px]">
+                Entry today:
+              </span>
               <span className="font-lora font-semibold text-xl">
                 {hasEntryToday ? "Yes" : "No"}
               </span>

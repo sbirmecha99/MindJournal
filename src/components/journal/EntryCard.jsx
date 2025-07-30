@@ -15,7 +15,7 @@ const EntryCard = ({ entry, onDelete, viewMode }) => {
     <div className="ccard overflow-hidden hover:shadow-lg rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 transition-all duration-300">
       <div className="p-4">
         <div className="flex justify-between items-start mb-3">
-          <h3 className="font-playwrite font-medium text-lg text-neutral-800 dark:text-white leading-tight">
+          <h3 className="font-libre-baskerville font-medium text-lg text-neutral-800 dark:text-white leading-tight">
             {title}
           </h3>
           <MoodIcon mood={mood} size={24} />

@@ -45,7 +45,7 @@ const EditEntry = () => {
         >
           <FiArrowLeft size={18} />
         </button>
-        <h1 className="text-[22px] font-playwrite-au font-medium text-neutral-900 dark:text-white">
+        <h1 className="text-[23px] font-libre-baskerville font-medium text-neutral-900 dark:text-white">
           Edit Entry
         </h1>
       </div>

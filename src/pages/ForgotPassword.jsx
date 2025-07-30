@@ -21,7 +21,7 @@ const ForgotPassword = () => {
 
   return (
     <div>
-      <h2 className="text-xl font-playwrite-au font-semibold mb-4">
+      <h2 className="text-xl font-libre-baskerville font-semibold mb-4">
         Forgot Password
       </h2>
       <form onSubmit={handleSubmit}>

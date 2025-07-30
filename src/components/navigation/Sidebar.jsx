@@ -40,14 +40,14 @@ const Sidebar = () => {
         <div className="w-8 h-8 rounded bg-primary-600 flex items-center justify-center">
           <span className="text-white font-playwrite font-bold">M</span>
         </div>
-        <h1 className="text-xl font-playwrite font-bold text-neutral-800 dark:text-white">
+        <h1 className="text-xl font-libre-baskerville font-bold text-neutral-800 dark:text-white">
           MindJournal
         </h1>
       </div>
 
       {/* User info */}
       <div className="p-3 mb-6 rounded-lg bg-neutral-100 dark:bg-neutral-700">
-        <div className="text-sm font-playwrite-au font-medium text-neutral-900 dark:text-white truncate">
+        <div className="text-sm font-lora font-medium text-neutral-900 dark:text-white truncate">
           {user?.name}
         </div>
         <div className="font-lora text-xs text-neutral-500 dark:text-neutral-400 truncate">
@@ -87,7 +87,7 @@ const Sidebar = () => {
 
         <button
           onClick={logout}
-          className="font-playwrite-au font-light w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-neutral-800 transition-colors"
+          className="font-libre-baskerville font-light w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-neutral-800 transition-colors"
         >
           <FiLogOut size={20} />
           <span>Log out</span>

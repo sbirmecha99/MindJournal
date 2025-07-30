@@ -50,7 +50,7 @@ const RecentEntries = () => {
             className="block px-4 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
           >
             <div className="flex justify-between">
-              <h3 className="font-playwrite font-medium text-neutral-800 dark:text-neutral-100 mb-1 truncate pr-4">
+              <h3 className="font-libre-baskerville font-medium text-neutral-800 dark:text-neutral-100 mb-1 truncate pr-4">
                 {entry.title}
               </h3>
               <MoodIcon mood={entry.mood} />
