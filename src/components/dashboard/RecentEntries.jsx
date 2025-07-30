@@ -4,12 +4,14 @@ import { format } from "date-fns";
 import MoodIcon from "../journal/MoodIcon";
 
 const RecentEntries = () => {
-  const { entries } = useJournal();
+  const { entries, privateEntryIds } = useJournal();
 
-  // Get the 5 most recent entries
-  const recentEntries = entries.slice(0, 5);
+  // Get the 5 most recent public entries
+  const recentEntries = entries
+    .filter(entry => !privateEntryIds.includes(entry.id))
+    .slice(0, 5);
 
-  if (entries.length === 0) {
+  if (entries.filter(entry => !privateEntryIds.includes(entry.id)).length === 0) {
     return (
       <div className="card p-4">
         <h2 className="text-lg font-medium mb-4">Recent Entries</h2>
