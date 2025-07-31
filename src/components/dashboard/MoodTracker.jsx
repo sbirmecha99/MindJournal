@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { getMoodColor } from "../journal/MoodIcon";
 
 const MoodTracker = () => {
-  const { entries } = useJournal();
+  const { entries, privateEntryIds } = useJournal();
   const navigate = useNavigate();
   const [activeMoodPopoverId, setActiveMoodPopoverId] = useState(null);
   const [currentMoodIndices, setCurrentMoodIndices] = useState({});
@@ -30,6 +30,8 @@ const MoodTracker = () => {
   );
 
   const dayEntries = useMemo(() => {
+    const publicEntries = entries.filter(entry => !privateEntryIds.includes(entry.id));
+
     return days.map((day) => {
       const dayStart = new Date(day.date);
       dayStart.setHours(0, 0, 0, 0);
@@ -37,7 +39,7 @@ const MoodTracker = () => {
       const dayEnd = new Date(day.date);
       dayEnd.setHours(23, 59, 59, 999);
 
-      const entriesForDay = entries
+      const entriesForDay = publicEntries
         .filter((entry) => {
           const entryDate = new Date(entry.createdAt);
           return entryDate >= dayStart && entryDate <= dayEnd;

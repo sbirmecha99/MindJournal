@@ -1,11 +1,16 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { format } from "date-fns";
-import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiEdit2, FiTrash2, FiShield, FiUnlock } from "react-icons/fi";
+import { useJournal } from "../../contexts/JournalContext";
 import MoodIcon from "./MoodIcon";
 import { Goal } from "lucide-react";
 
 const EntryCard = ({ entry, onDelete, viewMode }) => {
   const { id, title, content, mood, createdAt, images, micro_goals } = entry;
+  const { privateEntryIds, togglePrivacy, requestPinToLock } = useJournal();
+  const location = useLocation();
+  const isPrivate = privateEntryIds.includes(id);
+  const fromVault = location.pathname === '/private-vault';
 
   const formattedDate = format(new Date(createdAt), "PPP");
   const truncatedContent =
@@ -49,6 +54,7 @@ const EntryCard = ({ entry, onDelete, viewMode }) => {
         <div className="flex justify-between items-center pt-2 border-t border-neutral-200 dark:border-neutral-700">
           <Link
             to={`/journal/${id}`}
+            state={{ from: fromVault ? '/private-vault' : '/journal' }}
             className="text-[14px] font-libre-baskerville font-medium text-primary-600 dark:text-primary-400 hover:text-primary-600 hover:underline transition-colors duration-200 flex items-center space-x-1"
           >
             <svg
@@ -68,8 +74,21 @@ const EntryCard = ({ entry, onDelete, viewMode }) => {
           </Link>
 
           <div className="flex items-center justify-end gap-2 pt-2">
+            <button
+              onClick={() => (isPrivate ? togglePrivacy(id) : requestPinToLock(id))}
+              className="group p-2 rounded-md text-neutral-600 dark:text-neutral-400 hover:bg-primary-50 dark:hover:bg-neutral-700 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200"
+              aria-label={isPrivate ? 'Make public' : 'Move to vault'}
+            >
+              {isPrivate ? (
+                <FiUnlock size={16} className="group-hover:scale-110 transition-transform duration-200" />
+              ) : (
+                <FiShield size={16} className="group-hover:scale-110 transition-transform duration-200" />
+              )}
+            </button>
+
             <Link
               to={`/journal/${id}/edit`}
+              state={{ from: fromVault ? '/private-vault' : '/journal' }}
               className="group p-2 rounded-md text-neutral-600 dark:text-neutral-400 hover:bg-primary-50 dark:hover:bg-neutral-700 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200"
               aria-label="Edit entry"
             >
