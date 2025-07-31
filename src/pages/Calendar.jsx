@@ -18,7 +18,7 @@ import { FiChevronLeft, FiChevronRight, FiPlus } from "react-icons/fi";
 import SidePanel from "../components/calendar/SidePanel";
 
 const Calendar = () => {
-  const { entries, isLoading } = useJournal();
+  const { entries, isLoading, privateEntryIds } = useJournal();
   const navigate = useNavigate();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(null);
@@ -38,7 +38,9 @@ const Calendar = () => {
     let days = [];
     let day = startDate;
 
-    const entriesByDate = entries.reduce((acc, entry) => {
+    const publicEntries = entries.filter(entry => !privateEntryIds.includes(entry.id));
+
+    const entriesByDate = publicEntries.reduce((acc, entry) => {
       const date = parseISO(entry.createdAt);
       const dateStr = format(date, "yyyy-MM-dd");
       if (!acc[dateStr]) acc[dateStr] = [];
