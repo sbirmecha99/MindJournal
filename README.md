@@ -13,7 +13,11 @@
 - **Calendar View**: Navigate past journal entries and moods using an interactive **calendar component**  
 - **Journal Entry Management (CRUD)**:
   - Create, edit, view, and delete personal journal entries  
-  - Clean UI for daily reflections and personal notes  
+  - Clean UI for daily reflections and personal notes
+- ## 🙏 Gratitude Journal
+  - A new page for users to record 3 things they’re grateful for daily. 
+  - Data is stored locally for privacy. Accessible from the main navigation.
+  
 - **Settings Page**:
   - Manage user preferences  
   - Toggle between **Dark and Light themes**  

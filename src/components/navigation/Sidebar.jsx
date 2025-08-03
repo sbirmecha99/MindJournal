@@ -23,6 +23,7 @@ const Sidebar = () => {
     { name: "Private Vault", path: "/private-vault", icon: <FiShield size={20} /> },
     { name: "Calendar", path: "/calendar", icon: <FiCalendar size={20} /> },
     { name: "Insights", path: "/stats", icon: <FiPieChart size={20} /> },
+    { name: "Gratitude", path: "/gratitude", icon: <FiCheckCircle size={20} /> }, 
     { name: "Settings", path: "/settings", icon: <FiSettings size={20} /> },
     {
       name: "MindBot-AI",
