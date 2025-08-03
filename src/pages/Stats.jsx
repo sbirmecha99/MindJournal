@@ -255,38 +255,41 @@ const Stats = () => {
 
   return (
     <div className="space-y-6 animate-fadeIn">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-neutral-900/60 backdrop-blur-md px-4 py-4 rounded-xl shadow-inner">
         <h1 className="text-2xl md:text-3xl font-libre-baskerville font-bold text-neutral-900 dark:text-white">
-          Insights
-        </h1>
+           <span className="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
+        Insights
+      </span>
+      <span className="absolute left-0 bottom-0 w-full h-1 bg-gradient-to-r from-teal-400 to-cyan-400 opacity-20 rounded-full animate-pulse"></span>
+    </h1>
 
-        <div className="inline-flex rounded-md shadow-sm" role="group">
+        <div className="inline-flex rounded-md shadow-inner border border-neutral-300 dark:border-neutral-700 bg-white/70 dark:bg-neutral-800/70 backdrop-blur-md overflow-hidden" role="group">
           <button
             onClick={() => setTimeRange("week")}
-            className={`px-4 py-2 text-sm font-lora font-medium rounded-l-md border ${
+            className={`px-4 py-2 text-sm font-lora font-medium transition-all duration-200 ${
               timeRange === "week"
-                ? "bg-primary-600 text-white border-primary-600"
-                : "bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-750"
+                ? "bg-primary-600 text-white shadow-md hover:shadow-lg"
+                : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700"
             }`}
           >
             This Week
           </button>
           <button
             onClick={() => setTimeRange("month")}
-            className={`px-4 py-2 text-sm font-lora font-medium border-t border-b ${
+            className={`px-4 py-2 text-sm font-lora font-medium transition-all duration-200 ${
               timeRange === "month"
-                ? "bg-primary-600 text-white border-primary-600"
-                : "bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-750"
+                ? "bg-primary-600 text-white shadow-md hover:shadow-lg"
+                : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700"
             }`}
           >
             This Month
           </button>
           <button
             onClick={() => setTimeRange("all")}
-            className={`px-4 py-2 text-sm font-lora font-medium rounded-r-md border ${
+            className={`px-4 py-2 text-sm font-lora font-medium transition-all duration-200 ${
               timeRange === "all"
-                ? "bg-primary-600 text-white border-primary-600"
-                : "bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-750"
+                ? "bg-primary-600 text-white shadow-md hover:shadow-lg"
+                : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700"
             }`}
           >
             All Time
@@ -295,8 +298,8 @@ const Stats = () => {
       </div>
 
       {filteredEntries.length === 0 ? (
-        <div className="card p-8 text-center">
-          <h2 className="text-lg font-libre-baskerville font-medium text-neutral-800 dark:text-white mb-2">
+        <div className="card p-8 text-center bg-white/70 dark:bg-neutral-800/70 backdrop-blur-md rounded-xl shadow-inner animate-fadeIn">
+          <h2 className="text-lg font-libre-baskerville font-semibold text-neutral-900 dark:text-white mb-2">
             No data available!
           </h2>
           <p className="font-lora text-neutral-600 dark:text-neutral-400">
@@ -304,30 +307,30 @@ const Stats = () => {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="card p-4 h-[300px]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fadeIn">
+          <div className="card p-4 h-[300px] bg-white/70 dark:bg-neutral-800/70 backdrop-blur-md rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
             {moodData && <Pie data={moodData} options={pieOptions} />}
           </div>
 
-          <div className="card p-4 h-[300px]">
+          <div className="card p-4 h-[300px] bg-white/70 dark:bg-neutral-800/70 backdrop-blur-md rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 animate-fadeIn">
             {activityData ? (
               <Bar data={activityData} options={barOptions} />
             ) : (
               <div className="h-full flex items-center justify-center">
-                <p className="text-neutral-500 dark:text-neutral-400">
+                <p className="text-neutral-500 dark:text-neutral-400  font-lora">
                   No activity data available
                 </p>
               </div>
             )}
           </div>
 
-          <div className="card p-6 lg:col-span-2">
-            <h2 className="text-[18px] font-libre-baskerville font-bold mb-4">
+          <div className="card p-6 lg:col-span-2 bg-white/70 dark:bg-neutral-800/70 backdrop-blur-md rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 animate-fadeIn">
+            <h2 className="text-[18px] font-libre-baskerville font-bold text-neutral-900 dark:text-white mb-4">
               Journal Stats
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
+              <div className="p-4 bg-primary-100/50 dark:bg-primary-900/30 rounded-lg shadow-sm hover:shadow-primary-400/30 transition-shadow duration-300">
                 <div className="text-[16px] font-lora font-medium text-neutral-600 dark:text-neutral-400">
                   Total Entries
                 </div>
@@ -336,7 +339,7 @@ const Stats = () => {
                 </div>
               </div>
 
-              <div className="p-4 bg-secondary-50 dark:bg-secondary-900/20 rounded-lg">
+              <div className="p-4 bg-secondary-100/50 dark:bg-secondary-900/30 rounded-lg shadow-sm hover:shadow-secondary-400/30 transition-shadow duration-300">
                 <div className="text-[16px] font-lora font-medium text-neutral-600 dark:text-neutral-400">
                   Average Mood
                 </div>
@@ -369,7 +372,7 @@ const Stats = () => {
                 </div>
               </div>
 
-              <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <div className="p-4 bg-green-100/50 dark:bg-green-900/30 rounded-lg shadow-sm hover:shadow-green-400/30 transition-shadow duration-300">
                 <div className="text-[16px] font-lora font-medium text-neutral-600 dark:text-neutral-400">
                   Most Common Mood
                 </div>
@@ -400,7 +403,7 @@ const Stats = () => {
                 </div>
               </div>
 
-              <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+              <div className="p-4 bg-yellow-100/50 dark:bg-yellow-900/30 rounded-lg shadow-sm hover:shadow-yellow-400/30 transition-shadow duration-300">
                 <div className="text-[16px] font-lora font-medium text-neutral-600 dark:text-neutral-400">
                   Most Active Day
                 </div>
