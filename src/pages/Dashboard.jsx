@@ -5,6 +5,7 @@ import MoodTracker from "../components/dashboard/MoodTracker";
 //import MoodChart from "../components/dashboard/MoodChart";
 import MoodTrendChart from "../components/dashboard/MoodTrendChart";
 import AffirmationBanner from "../components/dashboard/AffirmationBanner";
+import Heatmap from "../components/dashboard/Heatmap";
 import { format } from "date-fns";
 
 const Dashboard = () => {
@@ -33,7 +34,7 @@ const Dashboard = () => {
   });
 
   return (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="calming-bg min-h-screen space-y-6 animate-fadeIn">
       <div>
         <h1 className="text-2xl md:text-3xl font-libre-baskerville font-bold text-neutral-900 dark:text-white">
           Welcome, {user.name}
@@ -82,6 +83,8 @@ const Dashboard = () => {
       </div>
 
       <MoodTrendChart />
+
+      <Heatmap />
 
       <RecentEntries />
     </div>
