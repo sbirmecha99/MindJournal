@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { FiPlus, FiTrash2 } from "react-icons/fi";
+import { FiPlus, FiTrash2, FiEdit2, FiSave, FiDownload } from "react-icons/fi";
 import { AnimatePresence, motion } from "framer-motion";
 
 const GratitudePage = () => {
@@ -13,8 +13,9 @@ const GratitudePage = () => {
   });
 
   const [gratitudes, setGratitudes] = useState(["", "", ""]);
+  const [editEntryId, setEditEntryId] = useState(null);
+  const [editItems, setEditItems] = useState([]);
 
-  // Save entries to localStorage on update
   useEffect(() => {
     localStorage.setItem("gratitudeEntries", JSON.stringify(entries));
   }, [entries]);
@@ -37,9 +38,36 @@ const GratitudePage = () => {
     }
   };
 
-  const filteredEntries = useMemo(() => {
-    return entries;
-  }, [entries]);
+  const startEditing = (entry) => {
+    setEditEntryId(entry.id);
+    setEditItems([...entry.items]);
+  };
+
+  const saveEdit = (id) => {
+    const updated = entries.map((entry) =>
+      entry.id === id ? { ...entry, items: editItems } : entry
+    );
+    setEntries(updated);
+    setEditEntryId(null);
+    setEditItems([]);
+  };
+
+  const downloadEntry = (entry) => {
+    const content = `Date: ${entry.date}\n\n${entry.items
+      .map((item) => `• ${item}`)
+      .join("\n")}`;
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `gratitude_${entry.date}.txt`;
+    link.click();
+
+    window.URL.revokeObjectURL(url);
+  };
+
+  const filteredEntries = useMemo(() => entries, [entries]);
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-6">
@@ -104,18 +132,64 @@ const GratitudePage = () => {
                   <h3 className="font-libre-baskerville font-medium text-neutral-800 dark:text-white">
                     {entry.date}
                   </h3>
-                  <button
-                    onClick={() => deleteEntry(entry.id)}
-                    className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-500"
-                  >
-                    <FiTrash2 />
-                  </button>
+                  <div className="flex space-x-4 items-center">
+                    {editEntryId === entry.id ? (
+                      <button
+                        onClick={() => saveEdit(entry.id)}
+                        className="text-green-600 hover:text-green-800"
+                        title="Save"
+                      >
+                        <FiSave />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => startEditing(entry)}
+                        className="text-blue-600 hover:text-blue-800"
+                        title="Edit"
+                      >
+                        <FiEdit2 />
+                      </button>
+                    )}
+                    <button
+                      onClick={() => downloadEntry(entry)}
+                      className="text-indigo-600 hover:text-indigo-800"
+                      title="Download"
+                    >
+                      <FiDownload />
+                    </button>
+                    <button
+                      onClick={() => deleteEntry(entry.id)}
+                      className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-500"
+                      title="Delete"
+                    >
+                      <FiTrash2 />
+                    </button>
+                  </div>
                 </div>
-                <ul className="list-disc pl-5 text-neutral-700 dark:text-neutral-200 font-lora space-y-1">
-                  {entry.items.map((item, idx) =>
-                    item.trim() ? <li key={idx}>{item}</li> : null
-                  )}
-                </ul>
+
+                {editEntryId === entry.id ? (
+                  <div className="space-y-2">
+                    {editItems.map((item, idx) => (
+                      <input
+                        key={idx}
+                        type="text"
+                        className="input w-full"
+                        value={item}
+                        onChange={(e) => {
+                          const updated = [...editItems];
+                          updated[idx] = e.target.value;
+                          setEditItems(updated);
+                        }}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <ul className="list-disc pl-5 text-neutral-700 dark:text-neutral-200 font-lora space-y-1">
+                    {entry.items.map(
+                      (item, idx) => item.trim() && <li key={idx}>{item}</li>
+                    )}
+                  </ul>
+                )}
               </motion.div>
             ))}
           </div>
