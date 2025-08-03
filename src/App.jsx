@@ -4,6 +4,7 @@ import { useAuth } from './contexts/AuthContext'
 import { useTheme } from './contexts/ThemeContext'
 import { Toaster } from 'react-hot-toast'
 
+
 // Layouts
 import MainLayout from './layouts/MainLayout'
 import AuthLayout from './layouts/AuthLayout'
@@ -24,6 +25,7 @@ import NotFound from './pages/NotFound'
 import MindChat from './pages/MindChat'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
+import GratitudePage from './pages/GratitudePage';
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth()
@@ -74,6 +76,7 @@ function App() {
         <Route path="settings" element={<Settings />} />
         <Route path="private-vault" element={<PrivateVault />} />
         <Route path='mindchat' element={<MindChat/>}/>
+        <Route path="/gratitude" element={<GratitudePage />} />
       </Route>
       
       {/* 404 route */}
