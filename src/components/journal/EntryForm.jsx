@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useJournal } from "../../contexts/JournalContext";
 import {
   Check,
@@ -10,6 +10,7 @@ import {
   Loader2,
   Trash2,
   Shield,
+  Sparkles,
 } from "lucide-react";
 import {
   FaRunning,
@@ -81,6 +82,18 @@ const EntryForm = ({ onSubmit, initialData = {} }) => {
   const [generatedQuote, setGeneratedQuote] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(true);
+  const [isAiSupportEnabled, setIsAiSupportEnabled] = useState(false);
+  const [aiSuggestion, setAiSuggestion] = useState("");
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const debounceTimeoutRef = useRef(null);
+  const textareaRef = useRef(null);
+  const suggestionDivRef = useRef(null);
+
+  const handleScroll = () => {
+    if (textareaRef.current && suggestionDivRef.current) {
+      suggestionDivRef.current.scrollTop = textareaRef.current.scrollTop;
+    }
+  };
 
   useEffect(() => {
     if (initialData.id) {
@@ -101,9 +114,59 @@ const EntryForm = ({ onSubmit, initialData = {} }) => {
 
   const navigate = useNavigate();
 
+  const fetchAiSuggestion = useCallback(async (currentContent) => {
+    if (!isAiSupportEnabled || !currentContent) return;
+    setIsAiLoading(true);
+    setAiSuggestion("");
+
+    try {
+      const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      const prompt = `You are an AI writing assistant helping a user write a journal entry. Continue the entry based on the provided context. Keep the suggestion concise (one or two sentences) and relevant.
+      
+      **Context:**
+      - **Title:** ${entryData.title || 'Not specified'}
+      - **Mood:** ${entryData.mood || 'Not specified'}
+      - **Activities:** ${entryData.activities?.join(', ') || 'None'}
+      - **Goals:** ${entryData.micro_goals?.map(g => g.text).join(', ') || 'None'}
+
+      **Journal so far:**
+      ---
+      ${currentContent}
+      ---
+      
+      **Your continuation suggestion:**`;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const suggestion = response.text().trim();
+      
+      if (suggestion) {
+        setAiSuggestion(suggestion.split('\n')[0]); // Use only the first line for a clean suggestion
+      }
+
+    } catch (error) {
+      console.error("AI suggestion fetch failed:", error);
+    } finally {
+      setIsAiLoading(false);
+    }
+  }, [isAiSupportEnabled, entryData.title, entryData.mood, entryData.activities, entryData.micro_goals]);
+
+  const debouncedFetchAiSuggestion = useCallback((content) => {
+    clearTimeout(debounceTimeoutRef.current);
+    debounceTimeoutRef.current = setTimeout(() => {
+      fetchAiSuggestion(content);
+    }, 1000); // 1-second debounce
+  }, [fetchAiSuggestion]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEntryData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === 'content' && isAiSupportEnabled) {
+      debouncedFetchAiSuggestion(value);
+    }
   };
 
   const handleMoodSelection = (moodId) => {
@@ -544,19 +607,53 @@ const EntryForm = ({ onSubmit, initialData = {} }) => {
           <div className="pt-3">
             <label
               htmlFor="content"
-              className="block text-[16px] font-libre-baskerville font-semibold text-neutral-800 dark:text-neutral-200 mb-3"
+              className="flex items-center justify-between text-[16px] font-libre-baskerville font-semibold text-neutral-800 dark:text-neutral-200 mb-3"
             >
-              Journal Entry <span className="text-red-500">*</span>
+              <span>
+                Journal Entry <span className="text-red-500">*</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsAiSupportEnabled(!isAiSupportEnabled)}
+                className={`flex items-center gap-2 px-3 py-1 text-xs rounded-full transition-all duration-200 ${
+                  isAiSupportEnabled
+                    ? "bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-200 ring-1 ring-primary-400"
+                    : "bg-neutral-200 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300"
+                }`}
+              >
+                <Sparkles size={14} className={isAiSupportEnabled ? "text-primary-500" : ""} />
+                AI Support {isAiSupportEnabled ? "ON" : "OFF"}
+              </button>
             </label>
-            <textarea
-              id="content"
-              name="content"
-              value={entryData.content}
-              onChange={handleInputChange}
-              required
-              className="font-lora font-light text-[16px] w-full px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent shadow-sm min-h-[180px] resize-y transition-all duration-200"
-              placeholder="Write your thoughts and experiences here..."
-            />
+            <div className="relative h-[220px]">
+              <div
+                ref={suggestionDivRef}
+                className="font-lora font-light text-[16px] w-full h-full px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 whitespace-pre-wrap break-words overflow-auto pointer-events-none absolute top-0 left-0 z-0"
+              >
+                {entryData.content}
+                <span className="text-neutral-400 dark:text-neutral-500">
+                  {isAiLoading ? "..." : aiSuggestion}
+                </span>
+              </div>
+              <textarea
+                ref={textareaRef}
+                id="content"
+                name="content"
+                value={entryData.content}
+                onChange={handleInputChange}
+                onScroll={handleScroll}
+                onKeyDown={(e) => {
+                  if (e.key === 'Tab' && aiSuggestion) {
+                    e.preventDefault();
+                    setEntryData(prev => ({ ...prev, content: prev.content + aiSuggestion }));
+                    setAiSuggestion('');
+                  }
+                }}
+                required
+                className="font-lora font-light text-[16px] w-full h-full px-4 py-2 border border-transparent rounded-lg bg-transparent text-transparent placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent shadow-sm resize-none relative z-10 caret-neutral-900 dark:caret-neutral-100"
+                placeholder="Write your thoughts and experiences here..."
+              />
+            </div>
             <div className="mt-4 p-3 border border-neutral-300 dark:border-neutral-700 rounded-md bg-neutral-50 dark:bg-neutral-900 text-[14px] font-lora font-light prose dark:prose-invert max-w-none  break-words">
               <div
                 dangerouslySetInnerHTML={{
