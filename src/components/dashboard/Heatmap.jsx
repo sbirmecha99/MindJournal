@@ -29,18 +29,12 @@ const Heatmap = () => {
 
   const { entries } = useJournal();
 
-  const moodIntensity = {
-    great: 5,
-    good: 4,
-    okay: 3,
-    bad: 2,
-    awful: 1,
-  };
+  const moodIntensity = { great: 5, good: 4, okay: 3, bad: 2, awful: 1 };
 
   const aggregateMoods = (moods) => {
-    if (!moods || moods.length === 0) return null;
-    const total = moods.reduce((sum, mood) => sum + moodIntensity[mood], 0);
-    const avg = total / moods.length;
+    if (!moods.length) return null;
+    const avg =
+      moods.reduce((sum, mood) => sum + moodIntensity[mood], 0) / moods.length;
     if (avg >= 4.5) return "great";
     if (avg >= 3.5) return "good";
     if (avg >= 2.5) return "okay";
@@ -48,26 +42,19 @@ const Heatmap = () => {
     return "awful";
   };
 
-  const processJournalData = () => {
+  const journalData = useMemo(() => {
     const data = {};
     entries.forEach((entry) => {
       const dateString = format(new Date(entry.createdAt), "yyyy-MM-dd");
-      if (!data[dateString]) {
-        data[dateString] = { moods: [], entries: [], entryCount: 0 };
-      }
-      if (entry.mood) {
-        data[dateString].moods.push(entry.mood);
-        data[dateString].entries.push(entry);
-        data[dateString].entryCount++;
-      }
+      if (!data[dateString]) data[dateString] = { moods: [], entries: [] };
+      if (entry.mood) data[dateString].moods.push(entry.mood);
+      data[dateString].entries.push(entry);
     });
-    Object.values(data).forEach((d) => {
-      d.aggregatedMood = aggregateMoods(d.moods);
-    });
+    Object.values(data).forEach(
+      (d) => (d.aggregatedMood = aggregateMoods(d.moods))
+    );
     return data;
-  };
-
-  const journalData = processJournalData();
+  }, [entries]);
 
   const getMoodColor = (mood) => {
     switch (mood) {
@@ -124,40 +111,18 @@ const Heatmap = () => {
 
   const calendarData = useMemo(() => {
     const { start, end } = getDateRange();
-    const days = eachDayOfInterval({ start, end });
-    return days.map((day) => {
+    return eachDayOfInterval({ start, end }).map((day) => {
       const dateString = format(day, "yyyy-MM-dd");
       const moodData = journalData[dateString];
       return {
         date: day,
         dateString,
         mood: moodData?.aggregatedMood || null,
-        hasData: !!moodData,
         entries: moodData?.entries || [],
         moods: moodData?.moods || [],
       };
     });
   }, [filter, selectedYear, selectedMonth, selectedWeek, journalData]);
-
-  const weeksData = useMemo(() => {
-    const weeks = [];
-    let currentWeek = [];
-    calendarData.forEach((day, i) => {
-      currentWeek.push(day);
-      if ((i + 1) % 7 === 0 || i === calendarData.length - 1) {
-        weeks.push(currentWeek);
-        currentWeek = [];
-      }
-    });
-    return weeks;
-  }, [calendarData]);
-
-  const getCellSize = () => {
-    if (filter === "week") return "w-8 h-8 sm:w-10 sm:h-10";
-    if (filter === "month") return "w-5 h-5 sm:w-6 sm:h-6";
-    if (filter === "year") return "w-2 h-2 sm:w-3 sm:h-3";
-    return "w-5 h-5";
-  };
 
   const moodStats = useMemo(() => {
     const stats = { great: 0, good: 0, okay: 0, bad: 0, awful: 0, total: 0 };
@@ -172,29 +137,28 @@ const Heatmap = () => {
 
   const navigatePrevious = () => {
     if (filter === "week") setSelectedWeek((prev) => prev + 1);
-    if (filter === "month") {
-      if (selectedMonth === 0) {
-        setSelectedMonth(11);
-        setSelectedYear((y) => y - 1);
-      } else setSelectedMonth((m) => m - 1);
-    }
+    if (filter === "month")
+      selectedMonth === 0
+        ? (setSelectedMonth(11), setSelectedYear((y) => y - 1))
+        : setSelectedMonth((m) => m - 1);
     if (filter === "year") setSelectedYear((y) => y - 1);
   };
 
   const navigateNext = () => {
     if (filter === "week") setSelectedWeek((prev) => Math.max(0, prev - 1));
-    if (filter === "month") {
-      if (selectedMonth === 11) {
-        setSelectedMonth(0);
-        setSelectedYear((y) => y + 1);
-      } else setSelectedMonth((m) => m + 1);
-    }
+    if (filter === "month")
+      selectedMonth === 11
+        ? (setSelectedMonth(0), setSelectedYear((y) => y + 1))
+        : setSelectedMonth((m) => m + 1);
     if (filter === "year") setSelectedYear((y) => y + 1);
   };
 
   const getCurrentSelection = () => {
     if (filter === "week")
-      return `Week of ${format(subDays(new Date(), selectedWeek * 7), "MMM d, yyyy")}`;
+      return `Week of ${format(
+        subDays(new Date(), selectedWeek * 7),
+        "MMM d, yyyy"
+      )}`;
     if (filter === "month")
       return `${format(new Date(selectedYear, selectedMonth), "MMMM yyyy")}`;
     if (filter === "year") return `${selectedYear}`;
@@ -202,34 +166,37 @@ const Heatmap = () => {
   };
 
   return (
-    <div className="w-full p-6 bg-white dark:bg-neutral-800 rounded-lg shadow-sm border border-neutral-200 dark:border-neutral-700 animate-fadeIn">
+    <div className="w-full p-4 sm:p-6 bg-white dark:bg-neutral-800 rounded-lg shadow-sm border border-neutral-200 dark:border-neutral-700 animate-fadeIn">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-        <div className="flex items-center space-x-3">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
+        <div className="flex items-start sm:items-center gap-3">
           <div className="p-2 bg-primary-100 dark:bg-primary-800 text-primary-900 dark:text-primary-100 rounded-lg">
             <FiTrendingUp size={20} />
           </div>
           <div>
-            <h2 className="text-xl font-lora font-semibold text-neutral-900 dark:text-white">
+            <h2 className="text-lg sm:text-xl font-lora font-semibold text-neutral-900 dark:text-white">
               Mood Heatmap
             </h2>
-            <p className="text-neutral-600 dark:text-neutral-400 text-sm">
+            <p className="text-neutral-600 dark:text-neutral-400 text-sm sm:text-base">
               Visualize your emotional patterns over time
             </p>
           </div>
         </div>
+
         {/* Filter & Navigation */}
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap justify-between sm:justify-end items-center gap-2">
           <div className="relative">
             <button
               onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-              className="flex items-center space-x-2 px-3 py-2 text-sm bg-neutral-50 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-600 border"
+              className="flex items-center space-x-2 px-3 py-2 text-sm bg-neutral-50 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-600 border w-full sm:w-auto"
             >
               <FiCalendar size={14} />
               <span>{filter.charAt(0).toUpperCase() + filter.slice(1)}</span>
               <FiChevronDown
                 size={14}
-                className={`transition-transform ${showFilterDropdown ? "rotate-180" : ""}`}
+                className={`transition-transform ${
+                  showFilterDropdown ? "rotate-180" : ""
+                }`}
               />
             </button>
             {showFilterDropdown && (
@@ -251,10 +218,13 @@ const Heatmap = () => {
               </div>
             )}
           </div>
-          <button onClick={navigatePrevious} className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700">
+          <button
+            onClick={navigatePrevious}
+            className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700"
+          >
             <FiChevronLeft size={16} />
           </button>
-          <div className="px-3 py-1 bg-neutral-50 dark:bg-neutral-700 rounded-lg text-sm font-medium">
+          <div className="px-3 py-1 bg-neutral-50 dark:bg-neutral-700 rounded-lg text-xs sm:text-sm font-medium">
             {getCurrentSelection()}
           </div>
           <button
@@ -268,7 +238,7 @@ const Heatmap = () => {
       </div>
 
       {/* Mood Stats */}
-      <div className="grid grid-cols-5 gap-3 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
         {["great", "good", "okay", "bad", "awful"].map((mood) => (
           <div
             key={mood}
@@ -293,38 +263,52 @@ const Heatmap = () => {
         ))}
       </div>
 
-      {/* Heatmap */}
-      <div className="flex justify-center">
-        <div className="grid grid-flow-col gap-1 auto-cols-max">
-          {weeksData.map((week, i) => (
-            <div key={i} className="grid grid-flow-row gap-1 auto-rows-max">
-              {week.map((day) => {
-                const tooltipContent = day.hasData
-                  ? `<div><strong>${format(day.date, "MMM d, yyyy")}</strong><br/>Mood: ${getMoodLabel(
-                      day.mood
-                    )}<br/>Entries: ${day.moods.join(", ")}</div>`
-                  : `<div>${format(day.date, "MMM d, yyyy")}<br/>No Entry</div>`;
+      {/* Responsive Heatmap */}
+      <div className="w-full">
+        <div
+          className="grid"
+          style={{
+            gap: filter === "year" ? "4px" : filter === "week" ? "3px" : "4px",
+            gridTemplateColumns:
+              filter === "year"
+                ? "repeat(auto-fit, minmax(10px, 1fr))"
+                : filter === "month"
+                ? "repeat(auto-fit, minmax(16px, 1fr))"
+                : "repeat(auto-fit, minmax(20px, 1fr))",
+          }}
+        >
+          {calendarData.map((day) => {
+            const tooltipContent = day.mood
+              ? `<div><strong>${format(
+                  day.date,
+                  "MMM d, yyyy"
+                )}</strong><br/>Mood: ${getMoodLabel(
+                  day.mood
+                )}<br/>Entries: ${day.moods.join(", ")}</div>`
+              : `<div>${format(day.date, "MMM d, yyyy")}<br/>No Entry</div>`;
 
-                return (
-                  <div
-                    key={day.dateString}
-                    data-tooltip-id={`tooltip-${day.dateString}`}
-                    data-tooltip-html={tooltipContent}
-                    className={`${getCellSize()} rounded-sm transition-all duration-200 hover:scale-110 cursor-pointer ${getMoodColor(
-                      day.mood
-                    )}`}
-                  >
-                    <Tooltip id={`tooltip-${day.dateString}`} className="max-w-xs text-sm" />
-                  </div>
-                );
-              })}
-            </div>
-          ))}
+            return (
+              <div key={day.dateString} className="relative aspect-square">
+                <div
+                  data-tooltip-id={`tooltip-${day.dateString}`}
+                  data-tooltip-html={tooltipContent}
+                  className={`absolute inset-0 rounded-sm cursor-pointer transition-shadow hover:shadow-lg hover:z-20 ${getMoodColor(
+                    day.mood
+                  )}`}
+                >
+                  <Tooltip
+                    id={`tooltip-${day.dateString}`}
+                    className="max-w-xs text-sm z-50"
+                  />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
       {/* Color Legend */}
-      <div className="flex justify-center mt-4 space-x-4">
+      <div className="flex flex-wrap justify-center mt-4 gap-4">
         {[
           { label: "Great", color: "bg-emerald-500 dark:bg-emerald-400" },
           { label: "Good", color: "bg-blue-500 dark:bg-blue-400" },
@@ -334,7 +318,9 @@ const Heatmap = () => {
         ].map((item) => (
           <div key={item.label} className="flex items-center space-x-2">
             <div className={`w-4 h-4 rounded-sm ${item.color}`} />
-            <span className="text-sm text-neutral-700 dark:text-neutral-300">{item.label}</span>
+            <span className="text-sm text-neutral-700 dark:text-neutral-300">
+              {item.label}
+            </span>
           </div>
         ))}
       </div>
