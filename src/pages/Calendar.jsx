@@ -1,5 +1,6 @@
 import { useState, useMemo, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
+import {motion} from "framer-motion";
 import { useJournal } from "../contexts/JournalContext";
 import {
   format,
@@ -101,36 +102,65 @@ const Calendar = () => {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl md:text-3xl font-libre-baskerville font-bold  text-neutral-900 dark:text-white relative">
-             <span className="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
-      Calendar
-    </span>
-    <span className="absolute left-0 bottom-0 w-full h-1 bg-gradient-to-r from-teal-400 to-cyan-400 opacity-20 rounded-full animate-pulse"></span>
-          </h1>
+           <motion.span
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", stiffness: 300 }}
+          className="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent"
+        >
+          Calendar
+        </motion.span>
+        <motion.span
+          initial={{ opacity: 0, width: 0 }}
+          animate={{ opacity: 0.2, width: "100%" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="absolute left-0 bottom-0 h-1 bg-gradient-to-r from-teal-400 to-cyan-400 rounded-full animate-pulse"
+        />
+      </h1>
+
           <div className="flex space-x-2  items-center">
-            <button
-              onClick={prevMonth}
-              className="p-2 rounded-full bg-neutral-800 hover:bg-teal-500 hover:text-white transition-all duration-200 shadow-sm hover:shadow-md active:scale-95"
-            >
-              <FiChevronLeft size={20} />
-            </button>
-            <button
-              className="px-4 py-2 text-neutral-300 hover:text-teal-400 transition-colors duration-200"
-              onClick={() => setCurrentMonth(new Date())}
-            >
-              {format(currentMonth, "MMMM yyyy")}
-            </button>
-            <button
-              onClick={nextMonth}
-              className="p-2 rounded-full bg-neutral-800 hover:bg-teal-500 hover:text-white transition-all duration-200 shadow-sm hover:shadow-md active:scale-95"
-            >
-              <FiChevronRight size={20} />
-            </button>
-          </div>
-        </div>
+           <motion.button
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.1, backgroundColor: "rgba(20,184,166,0.3)" }}
+          transition={{ duration: 0.2 }}
+          onClick={prevMonth}
+          className="p-2 rounded-full bg-neutral-800 hover:text-white transition-all duration-200 shadow-sm hover:shadow-md"
+        >
+          <FiChevronLeft size={20} />
+        </motion.button>
+              <motion.button
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", stiffness: 300 }}
+          className="px-4 py-2 text-neutral-300 hover:text-teal-400 transition-colors duration-200 relative"
+          onClick={() => setCurrentMonth(new Date())}
+        >
+          {format(currentMonth, "MMMM yyyy")}
+        </motion.button>
+
+             <motion.button
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.1, backgroundColor: "rgba(20,184,166,0.3), boxShadow: 0 0 10px rgba(20,184,166,0.6)"}}
+          transition={{ duration: 0.2 }}
+          onClick={nextMonth}
+          className="p-2 rounded-full bg-neutral-800 hover:text-white transition-all duration-200 shadow-sm hover:shadow-md"
+        >
+          <FiChevronRight size={20} />
+        </motion.button>
+            <motion.button
+          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.05, backgroundColor: "rgba(20,184,166,0.2)" }}
+          transition={{ duration: 0.2 }}
+          onClick={() => setCurrentMonth(new Date())}
+          className="px-3 py-1 ml-2 rounded-lg bg-neutral-700 text-neutral-300 hover:text-white hover:shadow-md transition-all"
+        >
+          Today
+        </motion.button>
+      </div>
+    </div>
 
         {/* Grid */}
         <div className="overflow-hidden rounded-2xl bg-neutral-800/50 backdrop-blur-md shadow-inner border border-neutral-700">
-          <div className="grid grid-cols-7 text-center border-b border-neutral-700">
+         <div className="grid grid-cols-1 md:grid-cols-7 border-b border-neutral-700 transition-all duration-300">
+
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
               <div
                 key={day}
@@ -141,15 +171,14 @@ const Calendar = () => {
             ))}
           </div>
 
-          <div className="grid grid-cols-7 border-b border-neutral-700">
-            {calendarDays.map((week, weekIndex) => (
-              <Fragment key={weekIndex}>
-                {week.map((day, dayIndex) => {
-                  const isPastOrToday = day.date <= new Date();
-                  const isClickable =
-                    (day.entries.length > 0 || day.isToday) && isPastOrToday;
+         <div className="grid grid-cols-7 md:grid-cols-7 grid-cols-1 border-b border-neutral-700 transition-all duration-300">
+    {calendarDays.map((week, weekIndex) => (
+      <Fragment key={weekIndex}>
+        {week.map((day, dayIndex) => {
+          const isPastOrToday = day.date <= new Date();
+          const isClickable = (day.entries.length > 0 || day.isToday) && isPastOrToday;
 
-                  return (
+          return (
                     <div
                       key={dayIndex}
                       onClick={
@@ -158,27 +187,25 @@ const Calendar = () => {
                       className={`group relative min-h-[100px] p-2 border-r border-neutral-200 dark:border-neutral-700 last:border-r-0
                         ${
                           !day.isCurrentMonth
-                            ? "bg-neutral-900/60"
+                            ? "bg-neutral-900/60 text-neutral-500"
                             : ""
                         }
                         ${
                           day.isToday
-                            ? "bg-teal-500/10"
+                            ? "ring-2 ring-teal-400/50 bg-teal-500/10 animate-pulse"
                             : ""
                         }
-                        ${
-                          isClickable
-                            ? "hover:bg-teal-500/10 cursor-pointer"
-                            : "cursor-default"
-                        }
-                        transition-all duration-200 rounded-xl shadow-sm hover:shadow-md active:scale-95`}
+                        ${isClickable ? "cursor-pointer hover:ring-2 hover:ring-teal-400/50 hover:shadow-lg hover:shadow-teal-300/20" : "cursor-default"}
+
+                        transition-all duration-300 rounded-xl  active:scale-95 hover:scale-[1.02]`}
                     >
                       <div className="flex justify-between items-start">
                         <div
-                          className={`flex items-center justify-center w-9 h-9 rounded-full text-sm font-libre-baskerville font-semibold
+                          className={`flex items-center justify-center w-9 h-9 rounded-full text-sm font-libre-baskerville font-semibold transition-all duration-200
+
                              ${
                             day.isToday
-                              ? "bg-teal-500 text-white shadow-md ring-2 ring-teal-300/40"
+                              ? "bg-teal-500 text-white shadow-md ring-2 ring-teal-300/40 animate-glow"
                               : isClickable
                               ? "text-neutral-200 group-hover:bg-teal-500/20"
                               : "text-neutral-500"
@@ -202,7 +229,8 @@ const Calendar = () => {
 
                       {day.entries.length > 0 && (
                         <div className="mt-2 flex justify-center">
-                          <div className="text-xs px-2 py-1 rounded-full bg-teal-500 text-white font-libre-baskerville font-light shadow-md">
+                         <div className="text-xs px-2 py-1 rounded-full bg-teal-500 text-white font-libre-baskerville font-light shadow-md group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-teal-400/40 transition-all">
+
                             {day.entries.length}{" "}
                             {day.entries.length === 1 ? "Entry" : "Entries"}
                           </div>

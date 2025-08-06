@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useJournal } from "../contexts/JournalContext";
 import { useTheme } from "../contexts/ThemeContext";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Pie, Bar } from "react-chartjs-2";
 import {
   format,
@@ -20,7 +21,7 @@ import {
   Legend,
   ArcElement,
   PointElement,
-  LineElement,
+  LineElement
 } from "chart.js";
 
 // Register ChartJS components
@@ -33,7 +34,8 @@ ChartJS.register(
   Legend,
   ArcElement,
   PointElement,
-  LineElement
+  LineElement,
+  ChartDataLabels
 );
 
 const Stats = () => {
@@ -152,289 +154,278 @@ const Stats = () => {
     };
   }, [filteredEntries]);
 
-  const pieOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: "right",
-        labels: {
-          color: theme === "dark" ? "#e5e5e5" : "#262626",
-          font: {
-            size: 14,
-            family: "Lora",
-          },
-        },
-      },
-      title: {
-        display: true,
-        text: "Mood Distribution",
+ const pieOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      position: "right",
+      labels: {
         color: theme === "dark" ? "#e5e5e5" : "#262626",
         font: {
-          family: "Libre Baskerville",
-          size: 18,
-          weight: "bold",
-        },
-      },
-      tooltip: {
-        bodyFont: {
+          size: 14,
           family: "Lora",
-          size: 13,
-        },
-        titleFont: {
-          family: "Lora",
-          size: 13,
-          weight: "bold",
         },
       },
     },
-  };
+    datalabels: {
+      color: theme === "dark" ? "#e5e5e5" : "#262626",
+      font: { family: "Lora", weight: "bold" },
+      formatter: (value, ctx) => {
+        const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+        return total ? `${((value / total) * 100).toFixed(1)}%` : '';
+      },
+    },
+    title: {
+      display: true,
+      text: "Mood Distribution",
+      color: theme === "dark" ? "#e5e5e5" : "#262626",
+      font: {
+        family: "Libre Baskerville",
+        size: 18,
+        weight: "bold",
+      },
+    },
+    tooltip: {
+      bodyFont: {
+        family: "Lora",
+        size: 13,
+      },
+      titleFont: {
+        family: "Lora",
+        size: 13,
+        weight: "bold",
+      },
+    },
+  },
+  animation: {
+    duration: 600,
+    easing: "easeOutQuart",
+  },
+};
 
-  const barOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    indexAxis: "y",
-    plugins: {
-      legend: {
+const barOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  indexAxis: "y",
+  plugins: {
+    legend: {
+      display: false,
+    },
+    title: {
+      display: true,
+      text: "Top Activities",
+      color: theme === "dark" ? "#e5e5e5" : "#262626",
+      font: {
+        family: "Libre Baskerville",
+        size: 18,
+        weight: "bold",
+      },
+    },
+    tooltip: {
+      bodyFont: {
+        family: "Lora",
+        size: 13,
+      },
+      titleFont: {
+        family: "Lora",
+        size: 13,
+        weight: "bold",
+      },
+    },
+    datalabels: {
+      anchor: 'end',
+      align: 'end',
+      color: theme === "dark" ? "#e5e5e5" : "#262626",
+      font: {
+        family: "Lora",
+        weight: "bold",
+      },
+      formatter: (value) => value,
+    },
+  },
+  scales: {
+    y: {
+      ticks: {
+        color: theme === "dark" ? "#a3a3a3" : "#525252",
+        font: {
+          family: "Lora",
+          size: 14,
+        },
+      },
+      grid: {
         display: false,
       },
-      title: {
-        display: true,
-        text: "Top Activities",
-        color: theme === "dark" ? "#e5e5e5" : "#262626",
+    },
+    x: {
+      beginAtZero: true,
+      ticks: {
+        color: theme === "dark" ? "#a3a3a3" : "#525252",
+        precision: 0,
         font: {
-          family: "Libre Baskerville",
-          size: 18,
-          weight: "bold",
+          family: "Lora",
+          size: 14,
         },
       },
-      tooltip: {
-        bodyFont: {
-          family: "Lora",
-          size: 13,
-        },
-        titleFont: {
-          family: "Lora",
-          size: 13,
-          weight: "bold",
-        },
+      grid: {
+        color:
+          theme === "dark"
+            ? "rgba(64, 64, 64, 0.5)"
+            : "rgba(229, 229, 229, 0.5)",
       },
     },
-    scales: {
-      y: {
-        ticks: {
-          color: theme === "dark" ? "#a3a3a3" : "#525252",
-          font: {
-            family: "Lora",
-            size: 14,
-          },
-        },
-        grid: {
-          display: false,
-        },
-      },
-      x: {
-        beginAtZero: true,
-        ticks: {
-          color: theme === "dark" ? "#a3a3a3" : "#525252",
-          precision: 0,
-          font: {
-            family: "Lora",
-            size: 14,
-          },
-        },
-        grid: {
-          color:
-            theme === "dark"
-              ? "rgba(64, 64, 64, 0.5)"
-              : "rgba(229, 229, 229, 0.5)",
-        },
-      },
-    },
-  };
+  },
+  animation: {
+    duration: 600,
+    easing: "easeOutQuart",
+  },
+};
 
-  return (
-    <div className="space-y-6 animate-fadeIn">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-neutral-900/60 backdrop-blur-md px-4 py-4 rounded-xl shadow-inner">
+
+ return (
+  <div className="space-y-6 animate-fadeIn">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-neutral-900/60 backdrop-blur-md px-4 py-4 rounded-xl shadow-inner">
+      <div className="relative">
         <h1 className="text-2xl md:text-3xl font-libre-baskerville font-bold text-neutral-900 dark:text-white">
-           <span className="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
-        Insights
-      </span>
-      <span className="absolute left-0 bottom-0 w-full h-1 bg-gradient-to-r from-teal-400 to-cyan-400 opacity-20 rounded-full animate-pulse"></span>
-    </h1>
-
-        <div className="inline-flex rounded-md shadow-inner border border-neutral-300 dark:border-neutral-700 bg-white/70 dark:bg-neutral-800/70 backdrop-blur-md overflow-hidden" role="group">
-          <button
-            onClick={() => setTimeRange("week")}
-            className={`px-4 py-2 text-sm font-lora font-medium transition-all duration-200 ${
-              timeRange === "week"
-                ? "bg-primary-600 text-white shadow-md hover:shadow-lg"
-                : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700"
-            }`}
-          >
-            This Week
-          </button>
-          <button
-            onClick={() => setTimeRange("month")}
-            className={`px-4 py-2 text-sm font-lora font-medium transition-all duration-200 ${
-              timeRange === "month"
-                ? "bg-primary-600 text-white shadow-md hover:shadow-lg"
-                : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700"
-            }`}
-          >
-            This Month
-          </button>
-          <button
-            onClick={() => setTimeRange("all")}
-            className={`px-4 py-2 text-sm font-lora font-medium transition-all duration-200 ${
-              timeRange === "all"
-                ? "bg-primary-600 text-white shadow-md hover:shadow-lg"
-                : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700"
-            }`}
-          >
-            All Time
-          </button>
-        </div>
+          <span className="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
+            Insights
+          </span>
+        </h1>
+        <span className="absolute left-0 bottom-0 w-full h-1 bg-gradient-to-r from-teal-400 to-cyan-400 opacity-20 rounded-full animate-pulse"></span>
       </div>
 
-      {filteredEntries.length === 0 ? (
-        <div className="card p-8 text-center bg-white/70 dark:bg-neutral-800/70 backdrop-blur-md rounded-xl shadow-inner animate-fadeIn">
-          <h2 className="text-lg font-libre-baskerville font-semibold text-neutral-900 dark:text-white mb-2">
-            No data available!
-          </h2>
-          <p className="font-lora text-neutral-600 dark:text-neutral-400">
-            There are no journal entries for the selected time period.
-          </p>
+      <div className="inline-flex rounded-md shadow-inner border border-neutral-300 dark:border-neutral-700 bg-white/70 dark:bg-neutral-800/70 backdrop-blur-md overflow-hidden" role="group">
+        {["week", "month", "all"].map((range) => (
+          <button
+            key={range}
+            onClick={() => setTimeRange(range)}
+            className={`px-4 py-2 text-sm font-lora font-medium transition-all duration-200 ${
+              timeRange === range
+                ? "bg-primary-600 text-white shadow-md hover:shadow-lg ring-2 ring-cyan-400/40"
+                : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:ring-1 hover:ring-cyan-300/40"
+            }`}
+          >
+            {range === "week" ? "This Week" : range === "month" ? "This Month" : "All Time"}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {filteredEntries.length === 0 ? (
+      <div className="card p-8 text-center bg-white/70 dark:bg-neutral-800/70 backdrop-blur-md rounded-xl shadow-inner animate-fadeIn">
+        <h2 className="text-lg font-libre-baskerville font-semibold text-neutral-900 dark:text-white mb-2">
+          No data available!
+        </h2>
+        <p className="font-lora text-neutral-600 dark:text-neutral-400">
+          There are no journal entries for the selected time period.
+        </p>
+      </div>
+    ) : (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fadeIn">
+        <div className="card p-4 h-[300px] bg-white/70 dark:bg-neutral-800/70 backdrop-blur-md rounded-xl shadow-md hover:shadow-cyan-400/20 transition-shadow duration-300 delay-100">
+          {moodData && <Pie data={moodData} options={pieOptions} />}
         </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fadeIn">
-          <div className="card p-4 h-[300px] bg-white/70 dark:bg-neutral-800/70 backdrop-blur-md rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
-            {moodData && <Pie data={moodData} options={pieOptions} />}
-          </div>
 
-          <div className="card p-4 h-[300px] bg-white/70 dark:bg-neutral-800/70 backdrop-blur-md rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 animate-fadeIn">
-            {activityData ? (
-              <Bar data={activityData} options={barOptions} />
-            ) : (
-              <div className="h-full flex items-center justify-center">
-                <p className="text-neutral-500 dark:text-neutral-400  font-lora">
-                  No activity data available
-                </p>
+        <div className="card p-4 h-[300px] bg-white/70 dark:bg-neutral-800/70 backdrop-blur-md rounded-xl shadow-md hover:shadow-cyan-400/20 transition-shadow duration-300 delay-200">
+          {activityData ? (
+            <Bar data={activityData} options={barOptions} />
+          ) : (
+            <div className="h-full flex items-center justify-center">
+              <p className="text-neutral-500 dark:text-neutral-400 font-lora">
+                No activity data available
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div className="card p-6 lg:col-span-2 bg-white/70 dark:bg-neutral-800/70 backdrop-blur-md rounded-xl shadow-md hover:shadow-cyan-400/20 transition-shadow duration-300 delay-300">
+          <h2 className="text-[18px] font-libre-baskerville font-bold text-neutral-900 dark:text-white mb-4">
+            Journal Stats
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="p-4 bg-primary-100/50 dark:bg-primary-900/30 rounded-lg shadow-sm hover:shadow-primary-400/30 transition-shadow duration-300">
+              <div className="text-[16px] font-lora font-medium text-neutral-600 dark:text-neutral-400">
+                Total Entries
               </div>
-            )}
-          </div>
-
-          <div className="card p-6 lg:col-span-2 bg-white/70 dark:bg-neutral-800/70 backdrop-blur-md rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 animate-fadeIn">
-            <h2 className="text-[18px] font-libre-baskerville font-bold text-neutral-900 dark:text-white mb-4">
-              Journal Stats
-            </h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-4 bg-primary-100/50 dark:bg-primary-900/30 rounded-lg shadow-sm hover:shadow-primary-400/30 transition-shadow duration-300">
-                <div className="text-[16px] font-lora font-medium text-neutral-600 dark:text-neutral-400">
-                  Total Entries
-                </div>
-                <div className="text-3xl font-lora font-semibold text-primary-700 dark:text-primary-400">
-                  {filteredEntries.length}
-                </div>
+              <div className="text-3xl font-lora font-semibold text-primary-700 dark:text-primary-400">
+                {filteredEntries.length}
               </div>
+            </div>
 
-              <div className="p-4 bg-secondary-100/50 dark:bg-secondary-900/30 rounded-lg shadow-sm hover:shadow-secondary-400/30 transition-shadow duration-300">
-                <div className="text-[16px] font-lora font-medium text-neutral-600 dark:text-neutral-400">
-                  Average Mood
-                </div>
-                <div className="text-3xl font-lora font-semibold text-secondary-700 dark:text-secondary-400">
-                  {filteredEntries.some((e) => e.mood)
-                    ? (() => {
-                        const moodScore = {
-                          great: 5,
-                          good: 4,
-                          okay: 3,
-                          bad: 2,
-                          awful: 1,
-                        };
-                        const entriesWithMood = filteredEntries.filter(
-                          (e) => e.mood
-                        );
-                        const average =
-                          entriesWithMood.reduce(
-                            (sum, entry) => sum + moodScore[entry.mood],
-                            0
-                          ) / entriesWithMood.length;
-
-                        if (average >= 4.5) return "Great";
-                        if (average >= 3.5) return "Good";
-                        if (average >= 2.5) return "Okay";
-                        if (average >= 1.5) return "Bad";
-                        return "Awful";
-                      })()
-                    : "N/A"}
-                </div>
+            <div className="p-4 bg-secondary-100/50 dark:bg-secondary-900/30 rounded-lg shadow-sm hover:shadow-secondary-400/30 transition-shadow duration-300">
+              <div className="text-[16px] font-lora font-medium text-neutral-600 dark:text-neutral-400">
+                Average Mood
               </div>
+              <div className="text-3xl font-lora font-semibold text-secondary-700 dark:text-secondary-400">
+                {filteredEntries.some((e) => e.mood)
+                  ? (() => {
+                      const moodScore = {
+                        great: 5,
+                        good: 4,
+                        okay: 3,
+                        bad: 2,
+                        awful: 1,
+                      };
+                      const entriesWithMood = filteredEntries.filter((e) => e.mood);
+                      const average =
+                        entriesWithMood.reduce((sum, entry) => sum + moodScore[entry.mood], 0) /
+                        entriesWithMood.length;
 
-              <div className="p-4 bg-green-100/50 dark:bg-green-900/30 rounded-lg shadow-sm hover:shadow-green-400/30 transition-shadow duration-300">
-                <div className="text-[16px] font-lora font-medium text-neutral-600 dark:text-neutral-400">
-                  Most Common Mood
-                </div>
-                <div className="text-3xl font-lora font-semibold text-green-700 dark:text-green-400">
-                  {filteredEntries.some((e) => e.mood)
-                    ? (() => {
-                        const moodCounts = filteredEntries.reduce(
-                          (acc, entry) => {
-                            if (entry.mood) {
-                              acc[entry.mood] = (acc[entry.mood] || 0) + 1;
-                            }
-                            return acc;
-                          },
-                          {}
-                        );
-
-                        return (
-                          Object.entries(moodCounts)
-                            .sort((a, b) => b[1] - a[1])[0][0]
-                            .charAt(0)
-                            .toUpperCase() +
-                          Object.entries(moodCounts)
-                            .sort((a, b) => b[1] - a[1])[0][0]
-                            .slice(1)
-                        );
-                      })()
-                    : "N/A"}
-                </div>
+                      if (average >= 4.5) return "Great";
+                      if (average >= 3.5) return "Good";
+                      if (average >= 2.5) return "Okay";
+                      if (average >= 1.5) return "Bad";
+                      return "Awful";
+                    })()
+                  : "N/A"}
               </div>
+            </div>
 
-              <div className="p-4 bg-yellow-100/50 dark:bg-yellow-900/30 rounded-lg shadow-sm hover:shadow-yellow-400/30 transition-shadow duration-300">
-                <div className="text-[16px] font-lora font-medium text-neutral-600 dark:text-neutral-400">
-                  Most Active Day
-                </div>
-                <div className="text-3xl font-lora font-semibold text-yellow-700 dark:text-yellow-400">
-                  {filteredEntries.length > 0
-                    ? (() => {
-                        const dayCounts = filteredEntries.reduce(
-                          (acc, entry) => {
-                            const day = format(
-                              parseISO(entry.createdAt),
-                              "EEEE"
-                            );
-                            acc[day] = (acc[day] || 0) + 1;
-                            return acc;
-                          },
-                          {}
-                        );
+            <div className="p-4 bg-green-100/50 dark:bg-green-900/30 rounded-lg shadow-sm hover:shadow-green-400/30 transition-shadow duration-300">
+              <div className="text-[16px] font-lora font-medium text-neutral-600 dark:text-neutral-400">
+                Most Common Mood
+              </div>
+              <div className="text-3xl font-lora font-semibold text-green-700 dark:text-green-400">
+                {filteredEntries.some((e) => e.mood)
+                  ? (() => {
+                      const moodCounts = filteredEntries.reduce((acc, entry) => {
+                        if (entry.mood) {
+                          acc[entry.mood] = (acc[entry.mood] || 0) + 1;
+                        }
+                        return acc;
+                      }, {});
 
-                        return Object.entries(dayCounts).sort(
-                          (a, b) => b[1] - a[1]
-                        )[0][0];
-                      })()
-                    : "N/A"}
-                </div>
+                      const mostCommonMood = Object.entries(moodCounts).sort((a, b) => b[1] - a[1])[0][0];
+                      return mostCommonMood.charAt(0).toUpperCase() + mostCommonMood.slice(1);
+                    })()
+                  : "N/A"}
+              </div>
+            </div>
+
+            <div className="p-4 bg-yellow-100/50 dark:bg-yellow-900/30 rounded-lg shadow-sm hover:shadow-yellow-400/30 transition-shadow duration-300">
+              <div className="text-[16px] font-lora font-medium text-neutral-600 dark:text-neutral-400">
+                Most Active Day
+              </div>
+              <div className="text-3xl font-lora font-semibold text-yellow-700 dark:text-yellow-400">
+                {filteredEntries.length > 0
+                  ? (() => {
+                      const dayCounts = filteredEntries.reduce((acc, entry) => {
+                        const day = format(parseISO(entry.createdAt), "EEEE");
+                        acc[day] = (acc[day] || 0) + 1;
+                        return acc;
+                      }, {});
+                      return Object.entries(dayCounts).sort((a, b) => b[1] - a[1])[0][0];
+                    })()
+                  : "N/A"}
               </div>
             </div>
           </div>
         </div>
-      )}
-    </div>
-  );
+      </div>
+    )}
+  </div>
+);
 };
 
 export default Stats;

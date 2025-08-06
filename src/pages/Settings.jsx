@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { useJournal } from '../contexts/JournalContext';
@@ -44,6 +45,24 @@ const Settings = () => {
     setConfirmPin('');
   };
 
+  const SectionHeader = ({ icon, title }) => (
+  <motion.div
+    className="flex items-center space-x-2 mb-6 cursor-default select-none"
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    whileHover={{ scale: 1.02 }}
+  >
+    <div className="w-8 h-8 rounded bg-primary-600 flex items-center justify-center">
+      {icon || <span className="text-white font-playwrite font-bold">M</span>}
+    </div>
+    <h2 className="text-lg font-lora font-bold text-neutral-800 dark:text-white">
+      {title}
+    </h2>
+  </motion.div>
+);
+
+
   const clearAllData = () => {
     if (
       window.confirm(
@@ -82,195 +101,240 @@ const Settings = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 animate-fadeIn">
-      <h1 className="text-2xl md:text-3xl font-libre-baskerville font-bold  text-neutral-900 dark:text-white">
-        Settings
-      </h1>
 
-      <div className="card overflow-hidden">
-        <div className="border-b border-neutral-200 dark:border-neutral-700">
-          <h2 className="text-lg font-lora font-bold p-4 bg-neutral-50 dark:bg-neutral-800">
-            Account Settings
-          </h2>
+ <div className="space-y-6 animate-fadeIn">
+  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-neutral-900/60 backdrop-blur-md px-4 py-4 rounded-xl shadow-inner">
+    <div className="relative">
+      <h1 className="text-2xl md:text-3xl font-libre-baskerville font-bold text-neutral-900 dark:text-white">
+  <span className="bg-gradient-to-r from-[#10B981] to-[#34D399] bg-clip-text text-transparent">
+    Settings
+  </span>
+</h1>
+<span className="absolute left-0 bottom-0 w-full h-1 bg-gradient-to-r from-[#10B981] to-[#34D399] opacity-20 rounded-full animate-pulse"></span>
 
-          <div className="p-6 space-y-6">
-            <div>
-              <div className="flex items-center text-[16px] font-lora font-medium  text-neutral-500 dark:text-neutral-400 mb-1">
-                <FiUser className="mr-2" />
-                Name
-              </div>
-              <div className="font-libre-baskerville font-medium text-neutral-800 dark:text-white">
-                {user.name}
-              </div>
+    </div>
+  </div>
+
+
+<div className="card overflow-hidden">
+  <div className="border-b border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-5 py-4">
+    <SectionHeader
+      icon={
+        <FiUser
+          className="text-[#10B981] dark:text-[#34D399] drop-shadow-[0_0_3px_rgba(16,185,129,0.7)] w-5 h-5"
+          aria-hidden="true"
+        />
+      }
+      title={<h2 className="text-lg font-lora font-bold">Account Settings</h2>}
+      className="flex items-center gap-3"
+    />
+  
+
+        <div className="p-6 space-y-6">
+          <div>
+            <div className="flex items-center text-[16px] font-lora font-medium text-neutral-500 dark:text-neutral-400 mb-1">
+              <FiUser className="mr-2" aria-hidden="true" />
+              Name
             </div>
-
-            <div>
-              <div className="flex items-center text-[16px] font-lora font-medium  text-neutral-500 dark:text-neutral-400 mb-1">
-                <FiMail className="mr-2" />
-                Email
-              </div>
-              <div className="font-libre-baskerville font-medium text-neutral-800 dark:text-white">
-                {user.email}
-              </div>
-            </div>
-
-            <div>
-              <div className="flex items-center text-[16px] font-lora font-medium text-neutral-500 dark:text-neutral-400 mb-1">
-                <FiLock className="mr-2" />
-                Password
-              </div>
-              <div className="font-libre-baskerville font-medium text-neutral-800 dark:text-white">
-                ••••••••
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-neutral-200 dark:border-neutral-700">
-              <button
-                onClick={logout}
-                className="btn btn-outline w-full font-libre-baskerville font-bold"
-              >
-                Sign Out
-              </button>
+            <div className="font-libre-baskerville font-medium text-neutral-800 dark:text-white">
+              {user.name}
             </div>
           </div>
-        </div>
 
-        <div className="border-b border-neutral-200 dark:border-neutral-700">
-          <h2 className="text-lg font-lora font-bold p-4 bg-neutral-50 dark:bg-neutral-800">
-            Appearance
-          </h2>
-
-          <div className="p-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <div className="font-libre-baskerville font-medium text-neutral-800 dark:text-white mb-1">
-                  Theme
-                </div>
-                <div className="text-[15px] font-lora font-light text-neutral-600 dark:text-neutral-400">
-                  {theme === "dark" ? "Dark mode is on" : "Light mode is on"}
-                </div>
-              </div>
-
-              <button
-                onClick={toggleTheme}
-                className="relative inline-flex h-6 w-11 items-center rounded-full bg-neutral-300 dark:bg-neutral-600"
-              >
-                <span
-                  className={`${
-                    theme === "dark"
-                      ? "translate-x-6 bg-primary-600"
-                      : "translate-x-1 bg-white"
-                  } inline-block h-4 w-4 transform rounded-full transition-transform`}
-                />
-              </button>
+          <div>
+            <div className="flex items-center text-[16px] font-lora font-medium text-neutral-500 dark:text-neutral-400 mb-1">
+              <FiMail className="mr-2" aria-hidden="true" />
+              Email
+            </div>
+            <div className="font-libre-baskerville font-medium text-neutral-800 dark:text-white">
+              {user.email}
             </div>
           </div>
+
+          <div>
+            <div className="flex items-center text-[16px] font-lora font-medium text-neutral-500 dark:text-neutral-400 mb-1">
+              <FiLock className="mr-2" aria-hidden="true" />
+              Password
+            </div>
+            <div className="font-libre-baskerville font-medium text-neutral-800 dark:text-white">
+              ••••••••
+            </div>
+          </div>
+
+          <button
+            onClick={logout}
+            className="btn btn-outline w-full font-libre-baskerville font-bold transition-shadow focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+            type="button"
+          >
+            Sign Out
+          </button>
         </div>
+      </div>
 
-        <div className="border-b border-neutral-200 dark:border-neutral-700">
-          <h2 className="text-lg font-lora font-bold p-4 bg-neutral-50 dark:bg-neutral-800 flex items-center">
-            <FiShield className="mr-2" />
-            Vault Settings
-          </h2>
-          
-          <form onSubmit={handleSetPin} className="p-6 space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                {pin ? 'Change Vault PIN' : 'Set Vault PIN'}
-              </label>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-2">
-                Set a 4-digit PIN to secure your private journal entries.
-              </p>
-              <input
-                type="password"
-                placeholder="New 4-digit PIN"
-                value={newPin}
-                onChange={(e) => setNewPin(e.target.value)}
-                maxLength="4"
-                className="input w-full"
-              />
+      {/* Appearance */}
+      <div className="border-b border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-5 py-4">
+  <SectionHeader
+    icon={null}
+    title={<h2 className="text-lg font-lora font-bold">Appearance</h2>}
+    className="flex items-center gap-3"
+  />
+
+        <div className="p-6 flex justify-between items-center">
+          <div>
+            <div className="font-libre-baskerville font-medium text-neutral-800 dark:text-white mb-1">
+              Theme
             </div>
-            <div>
-              <input
-                type="password"
-                placeholder="Confirm PIN"
-                value={confirmPin}
-                onChange={(e) => setConfirmPin(e.target.value)}
-                maxLength="4"
-                className="input w-full"
-              />
+            <div className="text-[15px] font-lora font-light text-neutral-600 dark:text-neutral-400">
+              {theme === "dark" ? "Dark mode is on" : "Light mode is on"}
             </div>
-            
-            {pinError && <p className="text-sm text-red-600 dark:text-red-400">{pinError}</p>}
-            {pinSuccess && <p className="text-sm text-green-600 dark:text-green-400">{pinSuccess}</p>}
-            
-            <button type="submit" className="btn btn-primary w-full">
-              {pin ? 'Update PIN' : 'Save PIN'}
-            </button>
-          </form>
+          </div>
+
+          <button
+            onClick={toggleTheme}
+            aria-label="Toggle Theme"
+            className="relative inline-flex h-6 w-11 rounded-full bg-neutral-300 dark:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+            type="button"
+          >
+            <span
+              className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transform transition-transform duration-300 ease-in-out
+              ${
+                theme === "dark" ? "translate-x-6 bg-[#10B981]" : "translate-x-1"
+              }`}
+            />
+          </button>
         </div>
+      </div>
 
-        <div>
-          <h2 className="text-lg font-lora font-bold p-4 bg-neutral-50 dark:bg-neutral-800">
-            Data Management
-          </h2>
+      {/* Vault Settings */}
+      <div className="border-b border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-5 py-4">
+  <SectionHeader
+    icon={
+      <FiShield
+        className="text-[#10B981] dark:text-[#34D399] drop-shadow-[0_0_3px_rgba(16,185,129,0.7)] w-5 h-5"
+        aria-hidden="true"
+      />
+    }
+    title={<h2 className="text-lg font-lora font-bold">Vault Settings</h2>}
+    className="flex items-center gap-3"
+  />
 
-          <div className="p-6 space-y-4">
-            <div>
-              <button
-                onClick={clearAllData}
-                className="btn w-full border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 font-libre-baskerville font-medium"
-              >
-                Clear All Journal Data
-              </button>
-              <p className="mt-2 text-[15px] font-lora font-light text-neutral-500 dark:text-neutral-400">
-                This will delete all your journal entries but keep your account.
-              </p>
-            </div>
+        <form onSubmit={handleSetPin} className="p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+              {pin ? "Change Vault PIN" : "Set Vault PIN"}
+            </label>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-2">
+              Set a 4-digit PIN to secure your private journal entries.
+            </p>
+            <input
+              type="password"
+              placeholder="New 4-digit PIN"
+              value={newPin}
+              onChange={(e) => setNewPin(e.target.value)}
+              maxLength="4"
+              className="input w-full focus:ring-[#10B981] focus:border-[#10B981] transition"
+            />
+          </div>
+          <div>
+            <input
+              type="password"
+              placeholder="Confirm PIN"
+              value={confirmPin}
+              onChange={(e) => setConfirmPin(e.target.value)}
+              maxLength="4"
+              className="input w-full focus:ring-[#10B981] focus:border-[#10B981] transition"
+            />
+          </div>
 
-            <div>
-              <button
-                onClick={() => setShowConfirmDelete(true)}
-                className="btn w-full border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center justify-center font-libre-baskerville font-medium"
-              >
-                <FiTrash2 className="mr-2" size={16} />
-                Delete Account
-              </button>
-              <p className="mt-2 text-[15px] font-lora font-light text-neutral-500 dark:text-neutral-400">
-                This will permanently delete your account and all associated
-                data.
-              </p>
-            </div>
+          {pinError && (
+            <p className="text-sm text-red-600 dark:text-red-400">{pinError}</p>
+          )}
+          {pinSuccess && (
+            <p className="text-sm text-[#10B981] dark:text-[#34D399]">{pinSuccess}</p>
+          )}
 
+          <button
+            type="submit"
+            className="btn btn-primary w-full font-libre-baskerville font-bold transition-shadow focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+          >
+            {pin ? "Update PIN" : "Save PIN"}
+          </button>
+        </form>
+      </div>
+
+      {/* Data Management */}
+    <div className="border-b border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-5 py-4">
+  <SectionHeader
+    icon={null}
+    title={<h2 className="text-lg font-lora font-bold">Data Management</h2>}
+    className="flex items-center gap-3"
+  />
+
+        <div className="p-6 space-y-4">
+          <button
+            onClick={clearAllData}
+            className="btn w-full border border-red-400 dark:border-red-700 text-red-600 dark:text-red-400 font-libre-baskerville font-medium
+            shadow-[0_0_8px_0_rgba(220,38,38,0.6)] hover:shadow-[0_0_10px_2px_rgba(220,38,38,0.8)] transition-shadow focus:outline-none focus:ring-2 focus:ring-red-600"
+            type="button"
+          >
+            Clear All Journal Data
+          </button>
+          <p className="mt-2 text-[15px] font-lora font-light text-neutral-500 dark:text-neutral-400">
+            This will delete all your journal entries but keep your account.
+          </p>
+
+          <button
+            onClick={() => setShowConfirmDelete(true)}
+            className="btn w-full border border-red-400 dark:border-red-700 text-red-600 dark:text-red-400 flex items-center justify-center font-libre-baskerville font-medium
+            shadow-[0_0_8px_0_rgba(220,38,38,0.6)] hover:shadow-[0_0_10px_2px_rgba(220,38,38,0.8)] transition-shadow focus:outline-none focus:ring-2 focus:ring-red-600"
+            type="button"
+          >
+            <FiTrash2 className="mr-2" size={16} />
+            Delete Account
+          </button>
+          <p className="mt-2 text-[15px] font-lora font-light text-neutral-500 dark:text-neutral-400">
+            This will permanently delete your account and all associated data.
+          </p>
+
+          <AnimatePresence>
             {showConfirmDelete && (
-              <div className="mt-4 p-4 border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-900/20 rounded-lg">
+              <motion.div
+                className="mt-4 p-4 border-4 border-red-600 dark:border-red-800 bg-red-50 dark:bg-red-900/20 rounded-lg
+              shadow-[0_0_15px_4px_rgba(220,38,38,0.7)]"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
                 <p className="font-libre-baskerville text-red-800 dark:text-red-200 font-medium mb-3">
                   Are you sure you want to delete your account?
                 </p>
                 <p className="font-lora text-red-700 dark:text-red-300 text-sm mb-4">
-                  This action is permanent and cannot be undone. All your data
-                  will be lost.
+                  This action is permanent and cannot be undone. All your data will be lost.
                 </p>
                 <div className="flex space-x-3">
                   <button
                     onClick={deleteAccount}
-                    className="font-lora btn bg-red-600 hover:bg-red-700 text-white"
+                    className="font-lora btn bg-red-600 hover:bg-red-700 text-white transition-shadow focus:outline-none focus:ring-2 focus:ring-red-600"
+                    type="button"
                   >
                     Yes, delete my account
                   </button>
                   <button
                     onClick={() => setShowConfirmDelete(false)}
-                    className="btn btn-outline font-lora"
+                    className="btn btn-outline font-lora transition-shadow focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                    type="button"
                   >
                     Cancel
                   </button>
                 </div>
-              </div>
+              </motion.div>
             )}
-          </div>
+          </AnimatePresence>
         </div>
       </div>
     </div>
+  </div>
   );
 };
 
