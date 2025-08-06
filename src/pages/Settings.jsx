@@ -116,19 +116,19 @@ const Settings = () => {
   </div>
 
 
-
-    <div className="card overflow-hidden rounded-lg border border-neutral-300 dark:border-neutral-700 shadow-md bg-white dark:bg-neutral-900">
-      {/* Account Settings */}
-      <div className="border-b border-neutral-200 dark:border-neutral-700">
-        <SectionHeader
-          icon={
-            <FiUser
-              className="text-[#10B981] dark:text-[#34D399] drop-shadow-[0_0_3px_rgba(16,185,129,0.7)]"
-              aria-hidden="true"
-            />
-          }
-          title="Account Settings"
+<div className="card overflow-hidden">
+  <div className="border-b border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-5 py-4">
+    <SectionHeader
+      icon={
+        <FiUser
+          className="text-[#10B981] dark:text-[#34D399] drop-shadow-[0_0_3px_rgba(16,185,129,0.7)] w-5 h-5"
+          aria-hidden="true"
         />
+      }
+      title={<h2 className="text-lg font-lora font-bold">Account Settings</h2>}
+      className="flex items-center gap-3"
+    />
+  
 
         <div className="p-6 space-y-6">
           <div>
@@ -172,8 +172,12 @@ const Settings = () => {
       </div>
 
       {/* Appearance */}
-      <div className="border-b border-neutral-200 dark:border-neutral-700">
-        <SectionHeader icon={null} title="Appearance" />
+      <div className="border-b border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-5 py-4">
+  <SectionHeader
+    icon={null}
+    title={<h2 className="text-lg font-lora font-bold">Appearance</h2>}
+    className="flex items-center gap-3"
+  />
 
         <div className="p-6 flex justify-between items-center">
           <div>
@@ -202,16 +206,17 @@ const Settings = () => {
       </div>
 
       {/* Vault Settings */}
-      <div className="border-b border-neutral-200 dark:border-neutral-700">
-        <SectionHeader
-          icon={
-            <FiShield
-              className="text-[#10B981] dark:text-[#34D399] drop-shadow-[0_0_3px_rgba(16,185,129,0.7)]"
-              aria-hidden="true"
-            />
-          }
-          title="Vault Settings"
-        />
+      <div className="border-b border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-5 py-4">
+  <SectionHeader
+    icon={
+      <FiShield
+        className="text-[#10B981] dark:text-[#34D399] drop-shadow-[0_0_3px_rgba(16,185,129,0.7)] w-5 h-5"
+        aria-hidden="true"
+      />
+    }
+    title={<h2 className="text-lg font-lora font-bold">Vault Settings</h2>}
+    className="flex items-center gap-3"
+  />
 
         <form onSubmit={handleSetPin} className="p-6 space-y-4">
           <div>
@@ -258,8 +263,12 @@ const Settings = () => {
       </div>
 
       {/* Data Management */}
-      <div>
-        <SectionHeader icon={null} title="Data Management" />
+    <div className="border-b border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-5 py-4">
+  <SectionHeader
+    icon={null}
+    title={<h2 className="text-lg font-lora font-bold">Data Management</h2>}
+    className="flex items-center gap-3"
+  />
 
         <div className="p-6 space-y-4">
           <button
