@@ -25,6 +25,9 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import Modal from "../common/Modal";
 import { useNavigate } from "react-router-dom";
 
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
 const moods = [
   {
     id: "great",
@@ -89,9 +92,137 @@ const EntryForm = ({ onSubmit, initialData = {} }) => {
   const textareaRef = useRef(null);
   const suggestionDivRef = useRef(null);
 
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef(null);
+
+  //Audio Recording
+  const [isRecordingAudio, setIsRecordingAudio] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const canvasRef = useRef(null);
+  const animationIdRef = useRef(null);
+  const analyserRef = useRef(null);
+
   const handleScroll = () => {
     if (textareaRef.current && suggestionDivRef.current) {
       suggestionDivRef.current.scrollTop = textareaRef.current.scrollTop;
+    }
+  };
+
+  // Init speech recognition if supported
+  useEffect(() => {
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = "en-US";
+
+      recognition.onresult = (event) => {
+        let transcript = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        setEntryData((prev) => ({
+          ...prev,
+          content: prev.content + " " + transcript,
+        }));
+      };
+
+      recognition.onerror = (err) => {
+        console.error("Speech recognition error:", err);
+        alert("Speech recognition error: " + err.error);
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+    }
+  }, []);
+
+  const toggleSpeechToText = () => {
+    if (!SpeechRecognition) {
+      alert("Speech-to-text is not supported in this browser. Try Chrome.");
+      return;
+    }
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  };
+  // 🎤 Audio Recording
+  const toggleAudioRecording = async () => {
+    if (isRecordingAudio) {
+      mediaRecorderRef.current.stop();
+      cancelAnimationFrame(animationIdRef.current);
+      setIsRecordingAudio(false);
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+
+      mediaRecorderRef.current.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+      mediaRecorderRef.current.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: "audio/webm",
+        });
+        const audioURL = URL.createObjectURL(audioBlob);
+        console.log("Recorded Audio URL:", audioURL);
+        // You can store this URL or upload audioBlob to server
+      };
+
+      // Waveform setup
+      const audioContext = new AudioContext();
+      const source = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 256;
+      source.connect(analyser);
+      analyserRef.current = analyser;
+
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+
+      const drawWaveform = () => {
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        analyser.getByteTimeDomainData(dataArray);
+
+        ctx.fillStyle = "#f3f4f6";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#3b82f6";
+        ctx.beginPath();
+
+        let sliceWidth = (canvas.width * 1.0) / bufferLength;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          let v = dataArray[i] / 128.0;
+          let y = (v * canvas.height) / 2;
+          if (i === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+          x += sliceWidth;
+        }
+        ctx.lineTo(canvas.width, canvas.height / 2);
+        ctx.stroke();
+
+        animationIdRef.current = requestAnimationFrame(drawWaveform);
+      };
+      drawWaveform();
+
+      mediaRecorderRef.current.start();
+      setIsRecordingAudio(true);
+    } catch (err) {
+      console.error("Audio recording error:", err);
+      alert("Unable to access microphone.");
     }
   };
 
@@ -114,22 +245,27 @@ const EntryForm = ({ onSubmit, initialData = {} }) => {
 
   const navigate = useNavigate();
 
-  const fetchAiSuggestion = useCallback(async (currentContent) => {
-    if (!isAiSupportEnabled || !currentContent) return;
-    setIsAiLoading(true);
-    setAiSuggestion("");
+  const fetchAiSuggestion = useCallback(
+    async (currentContent) => {
+      if (!isAiSupportEnabled || !currentContent) return;
+      setIsAiLoading(true);
+      setAiSuggestion("");
 
-    try {
-      const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      try {
+        const genAI = new GoogleGenerativeAI(
+          import.meta.env.VITE_GEMINI_API_KEY
+        );
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-      const prompt = `You are an AI writing assistant helping a user write a journal entry. Continue the entry based on the provided context. Keep the suggestion concise (one or two sentences) and relevant.
+        const prompt = `You are an AI writing assistant helping a user write a journal entry. Continue the entry based on the provided context. Keep the suggestion concise (one or two sentences) and relevant.
       
       **Context:**
-      - **Title:** ${entryData.title || 'Not specified'}
-      - **Mood:** ${entryData.mood || 'Not specified'}
-      - **Activities:** ${entryData.activities?.join(', ') || 'None'}
-      - **Goals:** ${entryData.micro_goals?.map(g => g.text).join(', ') || 'None'}
+      - **Title:** ${entryData.title || "Not specified"}
+      - **Mood:** ${entryData.mood || "Not specified"}
+      - **Activities:** ${entryData.activities?.join(", ") || "None"}
+      - **Goals:** ${
+        entryData.micro_goals?.map((g) => g.text).join(", ") || "None"
+      }
 
       **Journal so far:**
       ---
@@ -138,33 +274,43 @@ const EntryForm = ({ onSubmit, initialData = {} }) => {
       
       **Your continuation suggestion:**`;
 
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const suggestion = response.text().trim();
-      
-      if (suggestion) {
-        setAiSuggestion(suggestion.split('\n')[0]); // Use only the first line for a clean suggestion
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const suggestion = response.text().trim();
+
+        if (suggestion) {
+          setAiSuggestion(suggestion.split("\n")[0]); // Use only the first line for a clean suggestion
+        }
+      } catch (error) {
+        console.error("AI suggestion fetch failed:", error);
+      } finally {
+        setIsAiLoading(false);
       }
+    },
+    [
+      isAiSupportEnabled,
+      entryData.title,
+      entryData.mood,
+      entryData.activities,
+      entryData.micro_goals,
+    ]
+  );
 
-    } catch (error) {
-      console.error("AI suggestion fetch failed:", error);
-    } finally {
-      setIsAiLoading(false);
-    }
-  }, [isAiSupportEnabled, entryData.title, entryData.mood, entryData.activities, entryData.micro_goals]);
-
-  const debouncedFetchAiSuggestion = useCallback((content) => {
-    clearTimeout(debounceTimeoutRef.current);
-    debounceTimeoutRef.current = setTimeout(() => {
-      fetchAiSuggestion(content);
-    }, 1000); // 1-second debounce
-  }, [fetchAiSuggestion]);
+  const debouncedFetchAiSuggestion = useCallback(
+    (content) => {
+      clearTimeout(debounceTimeoutRef.current);
+      debounceTimeoutRef.current = setTimeout(() => {
+        fetchAiSuggestion(content);
+      }, 1000); // 1-second debounce
+    },
+    [fetchAiSuggestion]
+  );
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEntryData((prev) => ({ ...prev, [name]: value }));
 
-    if (name === 'content' && isAiSupportEnabled) {
+    if (name === "content" && isAiSupportEnabled) {
       debouncedFetchAiSuggestion(value);
     }
   };
@@ -302,7 +448,7 @@ const EntryForm = ({ onSubmit, initialData = {} }) => {
       ...entryData,
       images: [...existingImageUrls, ...uploadedImageUrls],
     };
-    
+
     const savedEntry = await onSubmit(finalEntryData, quote);
 
     const currentlyIsPrivate = privateEntryIds.includes(savedEntry.id);
@@ -621,11 +767,15 @@ const EntryForm = ({ onSubmit, initialData = {} }) => {
                     : "bg-neutral-200 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300"
                 }`}
               >
-                <Sparkles size={14} className={isAiSupportEnabled ? "text-primary-500" : ""} />
+                <Sparkles
+                  size={14}
+                  className={isAiSupportEnabled ? "text-primary-500" : ""}
+                />
                 AI Support {isAiSupportEnabled ? "ON" : "OFF"}
               </button>
             </label>
             <div className="relative h-[220px]">
+              {/* AI suggestion preview */}
               <div
                 ref={suggestionDivRef}
                 className="font-lora font-light text-[16px] w-full h-full px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 whitespace-pre-wrap break-words overflow-auto pointer-events-none absolute top-0 left-0 z-0"
@@ -635,6 +785,47 @@ const EntryForm = ({ onSubmit, initialData = {} }) => {
                   {isAiLoading ? "..." : aiSuggestion}
                 </span>
               </div>
+
+              {/* Speech-to-text & Audio Recording controls */}
+              <div className="flex items-center gap-3 mb-2 relative z-10">
+                {/* 🎤 Speech-to-text */}
+                <button
+                  type="button"
+                  onClick={toggleSpeechToText}
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    isListening
+                      ? "bg-red-500 text-white"
+                      : "bg-green-500 text-white"
+                  }`}
+                >
+                  {isListening ? "Stop Dictation" : "🎤 Speak"}
+                </button>
+
+                {/* 🔴 Audio Recording */}
+                <button
+                  type="button"
+                  onClick={toggleAudioRecording}
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    isRecordingAudio
+                      ? "bg-red-500 text-white"
+                      : "bg-blue-500 text-white"
+                  }`}
+                >
+                  {isRecordingAudio ? "Stop Recording" : "🔴 Record Audio"}
+                </button>
+              </div>
+
+              {/* Waveform Canvas */}
+              {isRecordingAudio && (
+                <canvas
+                  ref={canvasRef}
+                  width={300}
+                  height={60}
+                  className="border border-neutral-300 rounded-md mb-2 relative z-10"
+                />
+              )}
+
+              {/* Main textarea */}
               <textarea
                 ref={textareaRef}
                 id="content"
@@ -643,10 +834,13 @@ const EntryForm = ({ onSubmit, initialData = {} }) => {
                 onChange={handleInputChange}
                 onScroll={handleScroll}
                 onKeyDown={(e) => {
-                  if (e.key === 'Tab' && aiSuggestion) {
+                  if (e.key === "Tab" && aiSuggestion) {
                     e.preventDefault();
-                    setEntryData(prev => ({ ...prev, content: prev.content + aiSuggestion }));
-                    setAiSuggestion('');
+                    setEntryData((prev) => ({
+                      ...prev,
+                      content: prev.content + aiSuggestion,
+                    }));
+                    setAiSuggestion("");
                   }
                 }}
                 required
@@ -654,6 +848,7 @@ const EntryForm = ({ onSubmit, initialData = {} }) => {
                 placeholder="Write your thoughts and experiences here..."
               />
             </div>
+
             <div className="mt-4 p-3 border border-neutral-300 dark:border-neutral-700 rounded-md bg-neutral-50 dark:bg-neutral-900 text-[14px] font-lora font-light prose dark:prose-invert max-w-none  break-words">
               <div
                 dangerouslySetInnerHTML={{
@@ -668,7 +863,10 @@ const EntryForm = ({ onSubmit, initialData = {} }) => {
               <div className="flex items-center gap-3">
                 <Shield className="text-neutral-500" />
                 <div>
-                  <label htmlFor="isPrivate" className="font-semibold text-neutral-800 dark:text-neutral-200">
+                  <label
+                    htmlFor="isPrivate"
+                    className="font-semibold text-neutral-800 dark:text-neutral-200"
+                  >
                     Save to Vault
                   </label>
                   <p className="text-xs text-neutral-500 dark:text-neutral-400">
@@ -682,12 +880,14 @@ const EntryForm = ({ onSubmit, initialData = {} }) => {
                 aria-checked={isPrivate}
                 onClick={() => setIsPrivate(!isPrivate)}
                 className={`${
-                  isPrivate ? 'bg-primary-600' : 'bg-neutral-300 dark:bg-neutral-600'
+                  isPrivate
+                    ? "bg-primary-600"
+                    : "bg-neutral-300 dark:bg-neutral-600"
                 } relative inline-flex h-6 w-11 items-center rounded-full transition-colors`}
               >
                 <span
                   className={`${
-                    isPrivate ? 'translate-x-6' : 'translate-x-1'
+                    isPrivate ? "translate-x-6" : "translate-x-1"
                   } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                 />
               </button>
